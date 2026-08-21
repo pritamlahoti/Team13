@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-import React from 'react';
->>>>>>> origin/mohit
 import { useAuth } from '../hooks/useAuth';
 
 export default function PublicRoute({ children }) {

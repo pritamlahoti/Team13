@@ -82,7 +82,6 @@ const MOCK_JOURNEY = [
   },
 ];
 
-<<<<<<< HEAD
 // Initialize localStorage databases for closed-loop testing
 const initDB = () => {
   if (!localStorage.getItem('mock_quests_db')) {
@@ -117,15 +116,12 @@ const initDB = () => {
 };
 initDB();
 
-=======
->>>>>>> origin/mohit
 export const learningService = {
   getModules: async () => {
     try {
       return await api.request('/modules');
     } catch (err) {
       console.warn('Backend connection failed, using mock modules list', err);
-<<<<<<< HEAD
       return JSON.parse(localStorage.getItem('mock_quests_db') || '[]');
     }
   },
@@ -167,26 +163,12 @@ export const learningService = {
     return newQuest;
   },
 
-=======
-      return MOCK_QUESTS;
-    }
-  },
-
->>>>>>> origin/mohit
   getEnrollments: async () => {
     try {
       return await api.request('/enrollments');
     } catch (err) {
       console.warn('Backend connection failed, using mock enrollments', err);
-<<<<<<< HEAD
       return JSON.parse(localStorage.getItem('mock_enrollments_db') || '[]');
-=======
-      return MOCK_QUESTS.map(q => ({
-        id: `enroll-${q.id}`,
-        moduleId: q.id,
-        status: q.done ? 'completed' : 'enrolled'
-      }));
->>>>>>> origin/mohit
     }
   },
 
@@ -198,7 +180,6 @@ export const learningService = {
       });
     } catch (err) {
       console.warn('Backend connection failed, using mock enroll', err);
-<<<<<<< HEAD
     }
     const enrollments = JSON.parse(localStorage.getItem('mock_enrollments_db') || '[]');
     const existing = enrollments.find(e => e.moduleId === moduleId);
@@ -208,10 +189,6 @@ export const learningService = {
     enrollments.push(newEnrollment);
     localStorage.setItem('mock_enrollments_db', JSON.stringify(enrollments));
     return newEnrollment;
-=======
-      return { id: `enroll-${moduleId}`, moduleId, status: 'enrolled' };
-    }
->>>>>>> origin/mohit
   },
 
   submitWork: async (moduleId, contentRef) => {
@@ -222,7 +199,6 @@ export const learningService = {
       });
     } catch (err) {
       console.warn('Backend connection failed, using mock submission', err);
-<<<<<<< HEAD
     }
     const userStr = localStorage.getItem('user');
     const currentUser = userStr ? JSON.parse(userStr) : { id: 'student-id', name: 'Alex Explorer' };
@@ -258,10 +234,6 @@ export const learningService = {
     localStorage.setItem('mock_enrollments_db', JSON.stringify(updatedEnrollments));
 
     return newSub;
-=======
-      return { id: `sub-${moduleId}`, moduleId, contentRef, status: 'pending' };
-    }
->>>>>>> origin/mohit
   },
 
   completeEnrollment: async (enrollmentId) => {
@@ -271,7 +243,6 @@ export const learningService = {
       });
     } catch (err) {
       console.warn('Backend connection failed, using mock complete enrollment', err);
-<<<<<<< HEAD
     }
     const enrollments = JSON.parse(localStorage.getItem('mock_enrollments_db') || '[]');
     const updated = enrollments.map(e => {
@@ -347,14 +318,6 @@ export const learningService = {
   },
 
   getJourneyNodes: async () => {
-=======
-      return { id: enrollmentId, status: 'completed' };
-    }
-  },
-
-  getJourneyNodes: async () => {
-    // Spatial path is static visual navigation layer on frontend
->>>>>>> origin/mohit
     return MOCK_JOURNEY;
   }
 };

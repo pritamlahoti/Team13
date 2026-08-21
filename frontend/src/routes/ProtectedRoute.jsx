@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-import React from 'react';
->>>>>>> origin/mohit
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 

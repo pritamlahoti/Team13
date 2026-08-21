@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { useState, useEffect, useRef } from 'react';
-=======
-import React, { useState, useEffect, useRef } from 'react';
->>>>>>> origin/mohit
 import { motion } from 'framer-motion';
 
 function CountUp({ value, suffix = "" }) {
@@ -13,10 +9,6 @@ function CountUp({ value, suffix = "" }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-<<<<<<< HEAD
-=======
-          let start = 0;
->>>>>>> origin/mohit
           const end = parseInt(value, 10);
           if (isNaN(end)) return;
 

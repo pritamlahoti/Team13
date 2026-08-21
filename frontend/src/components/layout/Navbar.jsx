@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-import React from 'react';
->>>>>>> origin/mohit
 import { Link, useLocation } from 'react-router-dom';
 import { GraduationCap, Users } from 'lucide-react';
 

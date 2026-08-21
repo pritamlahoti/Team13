@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-import React from 'react';
->>>>>>> origin/mohit
 import { motion } from 'framer-motion';
 import { 
   Sparkles, 

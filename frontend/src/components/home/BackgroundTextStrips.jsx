@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-import React from 'react';
->>>>>>> origin/mohit
 import { useScroll, useTransform, motion } from 'framer-motion';
 
 function TickerRow({ text, rotateClass, speedClass, textStyleClass, translateValue }) {

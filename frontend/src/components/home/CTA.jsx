@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { useState } from 'react';
-=======
-import React, { useState } from 'react';
->>>>>>> origin/mohit
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, ArrowRight, CheckCircle } from 'lucide-react';
 import confetti from 'canvas-confetti';

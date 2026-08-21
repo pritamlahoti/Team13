@@ -32,7 +32,6 @@ export const authService = {
           token: 'mock-jwt-token-for-student',
         };
       }
-<<<<<<< HEAD
       if (email === 'director@questacademy.org' && password === 'director123') {
         return {
           user: { id: 'admin-3', name: 'Priya Iyer', email, role: 'HIGHER_MANAGEMENT' },
@@ -110,9 +109,4 @@ export const authService = {
     
     return { success: true, studentId, mentorId };
   }
-=======
-      throw new Error(err.message || 'Login failed. Please check credentials or network.');
-    }
-  },
->>>>>>> origin/mohit
 };

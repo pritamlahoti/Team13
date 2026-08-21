@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { useState, useEffect } from 'react';
-=======
-import React, { useState, useEffect } from 'react';
->>>>>>> origin/mohit
 
 // Reusable Layout Components
 import Navbar from '../components/layout/Navbar';

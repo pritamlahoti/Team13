@@ -1,30 +1,19 @@
-<<<<<<< HEAD
 import { useRef, useMemo } from 'react';
-=======
-import React, { useRef, useMemo } from 'react';
->>>>>>> origin/mohit
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Float } from '@react-three/drei';
 import Pencil from './Pencil';
 import BackgroundTextStrips from './BackgroundTextStrips';
 
-<<<<<<< HEAD
 function seedRandom(seed) {
   const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
 }
 
-=======
->>>>>>> origin/mohit
 function AnimatedPencil() {
   const pencilGroupRef = useRef();
   const { viewport } = useThree();
 
-<<<<<<< HEAD
   useFrame(() => {
-=======
-  useFrame((state) => {
->>>>>>> origin/mohit
     if (!pencilGroupRef.current) return;
 
     // Calculate scroll progress (0 to 1)
@@ -36,7 +25,6 @@ function AnimatedPencil() {
     const responsiveX = Math.min(viewport.width * 0.28, 2.5);
     const responsiveY = Math.min(viewport.height * 0.05, 0.4);
 
-<<<<<<< HEAD
     let x;
     let y;
     let z;
@@ -45,16 +33,6 @@ function AnimatedPencil() {
     let rx; 
     let ry; 
     let rz; 
-=======
-    let x = responsiveX;
-    let y = 0;
-    let z = 0;
-    
-    // Rotations in radians (Euler)
-    let rx = 0.3; 
-    let ry = 0.2; 
-    let rz = -0.6; 
->>>>>>> origin/mohit
 
     // Segment animations based on scroll progress
     if (progress <= 0.25) {
@@ -122,7 +100,6 @@ function StarfieldParticles() {
   // Generate stable random particle positions
   const positions = useMemo(() => {
     const arr = new Float32Array(count * 3);
-<<<<<<< HEAD
     let seed = 1.0;
     for (let i = 0; i < count; i++) {
       const r1 = seedRandom(seed++);
@@ -131,12 +108,6 @@ function StarfieldParticles() {
       arr[i * 3] = (r1 - 0.5) * 16;     // X
       arr[i * 3 + 1] = (r2 - 0.5) * 12; // Y
       arr[i * 3 + 2] = (r3 - 0.8) * 8;  // Z
-=======
-    for (let i = 0; i < count; i++) {
-      arr[i * 3] = (Math.random() - 0.5) * 16;     // X
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 12; // Y
-      arr[i * 3 + 2] = (Math.random() - 0.8) * 8;  // Z
->>>>>>> origin/mohit
     }
     return arr;
   }, []);

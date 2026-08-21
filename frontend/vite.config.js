@@ -14,13 +14,9 @@ function vitePluginStorageProxy() {
           return;
         }
 
-<<<<<<< HEAD
         // eslint-disable-next-line no-undef
         const forgeBaseUrl = (process.env.BUILT_IN_FORGE_API_URL || "").replace(/\/+$/, "");
         // eslint-disable-next-line no-undef
-=======
-        const forgeBaseUrl = (process.env.BUILT_IN_FORGE_API_URL || "").replace(/\/+$/, "");
->>>>>>> origin/mohit
         const forgeKey = process.env.BUILT_IN_FORGE_API_KEY;
 
         if (!forgeBaseUrl || !forgeKey) {

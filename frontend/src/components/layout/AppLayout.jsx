@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { useState } from 'react';
-=======
-import React, { useState } from 'react';
->>>>>>> origin/mohit
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import AICoachDrawer from '../coach/AICoachDrawer';

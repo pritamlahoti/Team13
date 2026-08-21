@@ -57,10 +57,7 @@ export default function AppRoutes() {
           <Route path="/achievements" element={<Achievements />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
-<<<<<<< HEAD
           <Route path="/admin" element={<Admin />} />
-=======
->>>>>>> origin/mohit
         </Route>
         
         {/* Catch-all */}
