@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const modulesService = require('./modules.service');
-const { createModuleSchema } = require('./modules.schema');
+const { createModuleSchema, listModulesQuerySchema } = require('./modules.schema');
 const { requireAuth, requireRole } = require('../../middleware/auth');
 const validate = require('../../middleware/validate');
 const httpError = require('../../utils/httpError');
@@ -19,8 +19,8 @@ router.post(
   }
 );
 
-router.get('/modules', requireAuth, async (req, res) => {
-  res.json(await modulesService.listModules());
+router.get('/modules', requireAuth, validate(listModulesQuerySchema, 'query'), async (req, res) => {
+  res.json(await modulesService.listModules(req.validatedQuery));
 });
 
 router.get('/modules/:id', requireAuth, async (req, res) => {
