@@ -1,12 +1,6 @@
-<<<<<<< HEAD
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Search, Users, Flame } from 'lucide-react';
-=======
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Trophy, Award, Search, Sparkles, Users, ArrowUpRight, Flame } from 'lucide-react';
->>>>>>> origin/mohit
 import { useAuth } from '../hooks/useAuth';
 
 export default function Leaderboard() {

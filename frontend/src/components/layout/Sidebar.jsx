@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { useEffect, useState } from 'react';
-=======
-import React, { useEffect, useState } from 'react';
->>>>>>> origin/mohit
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -10,20 +6,12 @@ import {
   Rocket, 
   Trophy, 
   Award, 
-<<<<<<< HEAD
-=======
-  Settings, 
->>>>>>> origin/mohit
   LogOut, 
   Flame, 
   Sparkles,
   User,
-<<<<<<< HEAD
   MessageSquare,
   ShieldCheck
-=======
-  MessageSquare
->>>>>>> origin/mohit
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { gamificationService } from '../../services/gamificationService';
@@ -31,33 +19,20 @@ import { gamificationService } from '../../services/gamificationService';
 export default function Sidebar({ onOpenCoach }) {
   const { user, logout } = useAuth();
   const [xp, setXp] = useState(0);
-<<<<<<< HEAD
-=======
-  const [loading, setLoading] = useState(true);
->>>>>>> origin/mohit
 
   useEffect(() => {
     if (user?.id) {
       gamificationService.getXp(user.id)
         .then(val => {
           setXp(val);
-<<<<<<< HEAD
         })
         .catch(() => {
           setXp(1380); // Fallback
-=======
-          setLoading(false);
-        })
-        .catch(() => {
-          setXp(1380); // Fallback
-          setLoading(false);
->>>>>>> origin/mohit
         });
     }
   }, [user]);
 
   // Game Math: 500 XP per level
-<<<<<<< HEAD
   const getRoleLabel = (role) => {
     if (role === 'HIGHER_MANAGEMENT') return 'Program Director';
     if (role === 'KATALYST_MANAGEMENT') return 'Mentor Coach';
@@ -87,24 +62,11 @@ export default function Sidebar({ onOpenCoach }) {
     );
   }
 
-=======
->>>>>>> origin/mohit
   const xpPerLevel = 500;
   const level = Math.floor(xp / xpPerLevel) + 1;
   const currentLevelXp = xp % xpPerLevel;
   const progressPercent = Math.min((currentLevelXp / xpPerLevel) * 100, 100);
 
-<<<<<<< HEAD
-=======
-  const menuItems = [
-    { to: '/dashboard', label: 'Mission Control', icon: LayoutDashboard },
-    { to: '/learning-path', label: 'Learning Path', icon: Compass },
-    { to: '/challenges', label: 'Challenges', icon: Rocket },
-    { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-    { to: '/achievements', label: 'Achievements', icon: Award },
-  ];
-
->>>>>>> origin/mohit
   const getInitials = (name) => {
     if (!name) return 'EX';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -142,11 +104,7 @@ export default function Sidebar({ onOpenCoach }) {
               {user?.name || 'Explorer'}
             </h3>
             <p className="text-[10px] text-slate-500 truncate font-sans tracking-wide">
-<<<<<<< HEAD
               {getRoleLabel(user?.role)}
-=======
-              {user?.role === 'KATALYST_MANAGEMENT' ? 'Mentor Coach' : 'Katalyst Scholar'}
->>>>>>> origin/mohit
             </p>
           </div>
         </div>
