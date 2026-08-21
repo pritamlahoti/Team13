@@ -1,11 +1,12 @@
 const { Router } = require('express');
 const { requireAuth, requireRole } = require('../../middleware/auth');
 const adminController = require('./admin.controller');
+const { ROLES } = require('../../constants/roles');
 
 const router = Router();
 
 // Apply auth and admin role to all /api/admin routes
-router.use('/api/admin', requireAuth, requireRole('admin'));
+router.use('/api/admin', requireAuth, requireRole(ROLES.KATALYST_MANAGEMENT, ROLES.HIGHER_MANAGEMENT));
 
 // Phase 2: Dashboard
 router.get('/api/admin/dashboard', adminController.getDashboard);
