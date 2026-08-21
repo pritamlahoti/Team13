@@ -1,4 +1,5 @@
 const { z } = require('zod');
+const { paginationQuerySchema } = require('../../utils/pagination');
 
 const createSubmissionSchema = z.object({
   moduleId: z.string().uuid('moduleId must be a valid UUID'),
@@ -7,4 +8,10 @@ const createSubmissionSchema = z.object({
   contentRef: z.string().trim().max(5000).optional(),
 });
 
-module.exports = { createSubmissionSchema };
+const listSubmissionsQuerySchema = paginationQuerySchema;
+
+const assignTeamSchema = z.object({
+  teamId: z.string().uuid('teamId must be a valid UUID'),
+});
+
+module.exports = { createSubmissionSchema, listSubmissionsQuerySchema, assignTeamSchema };

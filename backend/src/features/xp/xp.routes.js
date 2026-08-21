@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const xpService = require('./xp.service');
-const { yearQuerySchema } = require('./xp.schema');
+const { yearQuerySchema, ledgerQuerySchema } = require('./xp.schema');
 const { requireAuth } = require('../../middleware/auth');
 const requireSelfOrRole = require('../../middleware/requireSelfOrRole');
 const validate = require('../../middleware/validate');
@@ -20,8 +20,14 @@ router.get(
   }
 );
 
-router.get('/users/:id/xp/ledger', requireAuth, canViewUser, async (req, res) => {
-  res.json(await xpService.getLedger(req.params.id));
-});
+router.get(
+  '/users/:id/xp/ledger',
+  requireAuth,
+  canViewUser,
+  validate(ledgerQuerySchema, 'query'),
+  async (req, res) => {
+    res.json(await xpService.getLedger(req.params.id, req.validatedQuery));
+  }
+);
 
 module.exports = router;
