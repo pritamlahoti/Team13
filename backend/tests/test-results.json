@@ -1,0 +1,3589 @@
+{
+  "summary": {
+    "generatedAt": "2026-08-21T08:15:25.649Z",
+    "environment": "test",
+    "baseUrl": "http://localhost:52760",
+    "totalTestCases": 34,
+    "passedCount": 34,
+    "failedCount": 0,
+    "passRate": "100.0%"
+  },
+  "groupStatistics": [
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "group": "Group 3: Enrollment Management (FR003, FR004)",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "group": "Group 5: XP Ledger & Yearly Aggregations (FR008, FR009)",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "group": "Group 6: Filtered Reports (FR010)",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "group": "Group 7: AI Coach Services (FR014, FR025, FR026)",
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "passRate": "100.0%"
+    }
+  ],
+  "testCases": [
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-001: Valid login returns JWT and user payload",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:14:58.960Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/auth/login",
+        "auth": "None (Unauthenticated)",
+        "body": {
+          "email": "admin@katalyst.com",
+          "password": "Password@123"
+        }
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 957,
+        "json": {
+          "user": {
+            "id": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "name": "Katalyst Admin",
+            "email": "admin@katalyst.com",
+            "role": "katalyst_management",
+            "cohortYear": null,
+            "createdAt": "2026-08-21T06:26:38.093Z"
+          },
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMGQ1NTgwYWQtNTFiOS00MzgwLWE2YmQtNzMyMWZlY2NiNGM2Iiwicm9sZSI6ImthdGFseXN0X21hbmFnZW1lbnQiLCJpYXQiOjE3ODczMDAwOTgsImV4cCI6MTc4NzM4NjQ5OH0.XdOT4vcPv1Qo4MpjD_FnQTxq43L_Zl-VBz2AP1VUzwg"
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-002: Invalid password returns 401 Unauthorized",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:14:59.327Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/auth/login",
+        "auth": "None (Unauthenticated)",
+        "body": {
+          "email": "admin@katalyst.com",
+          "password": "WrongPassword!"
+        }
+      },
+      "response": {
+        "statusCode": 401,
+        "durationMs": 367,
+        "json": {
+          "error": "Invalid email or password"
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-003: Missing Authorization header returns 401",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:14:59.334Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/auth/me",
+        "auth": "None (Unauthenticated)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 401,
+        "durationMs": 6,
+        "json": {
+          "error": "Missing token"
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-004: Malformed JWT token returns 401",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:14:59.343Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/auth/me",
+        "auth": "Bearer (Custom / Token)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 401,
+        "durationMs": 7,
+        "json": {
+          "error": "Invalid or expired token"
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-005: Katalyst Management can signup new accounts",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:01.675Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/auth/signup",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {
+          "name": "QA Student",
+          "email": "qa.student.1787300100639@student.katalyst.com",
+          "password": "Password@123",
+          "role": "student",
+          "cohortYear": 2026
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 1036,
+        "json": {
+          "user": {
+            "id": "35f1a07d-1d61-4a69-b84c-54e6bb6a7218",
+            "name": "QA Student",
+            "email": "qa.student.1787300100639@student.katalyst.com",
+            "role": "student",
+            "cohortYear": 2026
+          },
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMzVmMWEwN2QtMWQ2MS00YTY5LWI4NGMtNTRlNmJiNmE3MjE4Iiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3ODczMDAxMDEsImV4cCI6MTc4NzM4NjUwMX0.qTp9XHyhlmu3ZXBNzosMCXmqtGg2yr62Nu9gD-fD63I"
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-006: Students attempting POST /auth/signup get 403 Forbidden",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:01.681Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/auth/signup",
+        "auth": "Bearer (Student)",
+        "body": {
+          "name": "Hacker",
+          "email": "hacker.1787300101676@katalyst.com",
+          "password": "Password@123",
+          "role": "katalyst_management"
+        }
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 5,
+        "json": {
+          "error": "Forbidden"
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-007: GET /auth/me returns profile without password hash",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:02.273Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/auth/me",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 592,
+        "json": {
+          "id": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "name": "Aarav Sharma",
+          "email": "aarav.sharma@student.katalyst.com",
+          "role": "student",
+          "cohortYear": 2023
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-001: Management creates modules across all 6 activity types",
+      "passed": true,
+      "details": "Created 6/6 module types",
+      "executedAt": "2026-08-21T08:15:04.628Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/modules",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {
+          "type": "milestone",
+          "classification": "optional",
+          "scoringMode": "subjective",
+          "dueDate": null
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 276,
+        "json": {
+          "id": "8b5c8cf4-985f-41e5-81b1-417c715a4181",
+          "type": "milestone",
+          "classification": "optional",
+          "scoringMode": "subjective",
+          "dueDate": "1970-01-01T00:00:00.000Z",
+          "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+          "createdAt": "2026-08-21T08:15:04.359Z"
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-002: Mandatory module rejects missing dueDate with 400 Bad Request",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:04.635Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/modules",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {
+          "type": "session",
+          "classification": "mandatory",
+          "scoringMode": "objective"
+        }
+      },
+      "response": {
+        "statusCode": 400,
+        "durationMs": 7,
+        "json": {
+          "error": "dueDate: dueDate is required for mandatory modules"
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-003: Student attempting POST /modules receives 403 Forbidden",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:04.639Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/modules",
+        "auth": "Bearer (Student)",
+        "body": {
+          "type": "course",
+          "classification": "optional",
+          "scoringMode": "objective"
+        }
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 4,
+        "json": {
+          "error": "Forbidden"
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-004: GET /modules returns array of active modules",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:05.310Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/modules",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 667,
+        "json": [
+          {
+            "id": "8b5c8cf4-985f-41e5-81b1-417c715a4181",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:15:04.359Z"
+          },
+          {
+            "id": "760f436e-1dba-4cc9-99e7-6392b2421ce3",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:15:04.130Z"
+          },
+          {
+            "id": "4ba6bcda-2cb1-4f04-be63-c3d688968498",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T08:15:03.808Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:15:03.817Z"
+          },
+          {
+            "id": "aba84d13-b506-4eea-8104-d384c672ac7c",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:15:03.511Z"
+          },
+          {
+            "id": "b3a9a045-0c3b-4282-a772-6384fb8b4b0e",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:15:03.217Z"
+          },
+          {
+            "id": "e8dc84be-abd5-475d-a9ec-4842f4d14eb5",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T08:15:02.275Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:15:02.288Z"
+          },
+          {
+            "id": "b4166fe3-4985-4df7-a1f8-67a1e576a870",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:13:07.249Z"
+          },
+          {
+            "id": "91a1de52-1ec8-413a-b1d4-f90f03d3f7cc",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T08:13:07.008Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:13:07.014Z"
+          },
+          {
+            "id": "e02ca8cb-482c-4906-ac89-e998201615a6",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:13:04.114Z"
+          },
+          {
+            "id": "43ecc772-3a51-42a5-b37c-c13bb8fbd336",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:13:02.309Z"
+          },
+          {
+            "id": "18179225-d270-4c60-8d0b-ca082e2d9b1f",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:13:02.063Z"
+          },
+          {
+            "id": "cd879d72-9ffb-486a-b865-98ff7f92708c",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T08:13:01.784Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:13:01.791Z"
+          },
+          {
+            "id": "8ab29031-6409-4753-b676-7e72c0fee889",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:13:01.562Z"
+          },
+          {
+            "id": "5cb805b4-389b-4f03-ae6b-840a1fa53bbc",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:13:01.298Z"
+          },
+          {
+            "id": "c8578640-e221-43a8-9a42-8023c15c10b9",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T08:12:59.855Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T08:12:59.869Z"
+          },
+          {
+            "id": "b8fa2c6e-ce77-4b01-b34e-829a1f279995",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:59:37.310Z"
+          },
+          {
+            "id": "619a0229-c183-46d4-916f-6d03e4fa9620",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T07:59:36.651Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:59:36.666Z"
+          },
+          {
+            "id": "6def7718-585f-4e52-8ebd-1a323d3f4be8",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:59:27.711Z"
+          },
+          {
+            "id": "7ebe593c-a3c8-442b-93d5-0d0e454435b0",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:59:25.956Z"
+          },
+          {
+            "id": "e3c466ac-11d6-45d4-9e27-3f58d17adfa7",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:59:25.729Z"
+          },
+          {
+            "id": "72210cb2-f4f4-42c1-875a-a4498870ea1f",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T07:59:25.427Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:59:25.438Z"
+          },
+          {
+            "id": "25df550b-15d5-42ec-9e7c-04f07a231a0f",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:59:25.209Z"
+          },
+          {
+            "id": "cf1b041e-a166-4690-b478-54dd65a04f59",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:59:24.933Z"
+          },
+          {
+            "id": "fa3010f4-1477-43bd-b260-3c6e0cd4b84f",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T07:59:24.409Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:59:24.422Z"
+          },
+          {
+            "id": "5b21fd67-bd43-41e0-b11f-4de655c7e661",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:56:59.931Z"
+          },
+          {
+            "id": "9ed3f6d7-716d-4849-9d41-87308c2fd8fb",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T07:56:59.699Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:56:59.704Z"
+          },
+          {
+            "id": "f000f77b-6b05-49dc-b81c-f6a21f066e2a",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:56:55.589Z"
+          },
+          {
+            "id": "e6855837-ce8e-4184-ab91-a7937a53c0fc",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:56:49.465Z"
+          },
+          {
+            "id": "f0e46922-8783-45f8-a59d-81abe354925c",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:56:43.440Z"
+          },
+          {
+            "id": "b3fc8cf6-b40b-4a06-ae5e-804cbb97ab6b",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T07:56:42.582Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:56:42.588Z"
+          },
+          {
+            "id": "72649b26-edab-4170-9a0b-b44140e361da",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:56:41.241Z"
+          },
+          {
+            "id": "6211f393-b640-4e27-a771-7af91128dbcc",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:56:39.567Z"
+          },
+          {
+            "id": "76a2a5df-323f-4c91-b64e-2705f515587b",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T07:56:37.815Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:56:37.824Z"
+          },
+          {
+            "id": "afffa163-af50-4444-aba2-99fdcb196f23",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:54:39.325Z"
+          },
+          {
+            "id": "4f83f4e0-6dc9-4371-8f73-1879185ead33",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T07:54:39.024Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:54:39.036Z"
+          },
+          {
+            "id": "a769feb6-72d6-4be7-a7d6-e2e70b58981e",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:54:33.752Z"
+          },
+          {
+            "id": "1b8c6f48-60ea-444c-b92b-a749882a07ea",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:54:32.046Z"
+          },
+          {
+            "id": "9711f8b2-948d-4ddd-98eb-f249cb7c3cbd",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:54:31.631Z"
+          },
+          {
+            "id": "f7b11836-0f43-4180-bc83-241cbd591f13",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T07:54:31.315Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:54:31.324Z"
+          },
+          {
+            "id": "676db059-4813-4961-a411-6992fa71e6c9",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:54:31.018Z"
+          },
+          {
+            "id": "deeec0de-7950-49a7-a16d-b47d02d87efe",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:54:30.735Z"
+          },
+          {
+            "id": "7474e1c8-688c-401e-9ab7-20f3c5caa274",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T07:54:30.222Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:54:30.236Z"
+          },
+          {
+            "id": "e1827e09-e105-4730-98df-cc60cfaf4341",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:52:08.320Z"
+          },
+          {
+            "id": "8b66f7f9-697f-44e8-a87c-a0b4166959b1",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T07:52:08.059Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:52:08.069Z"
+          },
+          {
+            "id": "1bd018f6-617e-4748-97e9-300fd22e0c93",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:52:04.015Z"
+          },
+          {
+            "id": "a512b71a-1d0f-4786-b172-6bef3eabee0f",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:51:58.461Z"
+          },
+          {
+            "id": "473801e1-5d20-4aaa-9dcb-704664f09606",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:51:58.134Z"
+          },
+          {
+            "id": "ace558ee-c091-47a0-bd8f-d46886b0b824",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T07:51:57.888Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:51:57.895Z"
+          },
+          {
+            "id": "36d0e179-eb4f-43e1-a68e-ce018d5f1d32",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:51:57.641Z"
+          },
+          {
+            "id": "7100dbc2-29f7-4fc0-8dbf-608745d983f9",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:51:57.348Z"
+          },
+          {
+            "id": "86e3630d-dec3-4734-81f6-dbabaf1700da",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T07:51:56.859Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:51:56.871Z"
+          },
+          {
+            "id": "9995a02a-2aaa-4cf9-9dcf-661a3188d5fd",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:50:11.746Z"
+          },
+          {
+            "id": "98d986a1-aab6-4573-9f35-dd9d9612b6d4",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T07:50:11.393Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:50:11.398Z"
+          },
+          {
+            "id": "124c69bf-25f2-41cf-a240-fc0d0375119d",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:50:03.843Z"
+          },
+          {
+            "id": "f83782ab-e6f3-4019-84bf-6b10de3c6af4",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:50:01.138Z"
+          },
+          {
+            "id": "2b2c7bb6-e6cc-4ec7-9e30-57ca018d2bc7",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:50:00.709Z"
+          },
+          {
+            "id": "5ff00c6f-42bf-4483-96d0-6896a079d3a9",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T07:50:00.250Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:50:00.257Z"
+          },
+          {
+            "id": "dc1cdfcc-cbcd-4de9-94c6-d0b21f9d18a7",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:49:59.904Z"
+          },
+          {
+            "id": "9509c47a-4905-43f5-8e97-6749bd3660d5",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:49:59.573Z"
+          },
+          {
+            "id": "54082819-a842-4c5c-8b13-a441253eaf5b",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T07:49:58.244Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:49:58.254Z"
+          },
+          {
+            "id": "36d20369-68a4-433e-923f-cd2bf37d6a8e",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "2026-10-31T23:59:59.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:49:22.014Z"
+          },
+          {
+            "id": "d518068d-431d-4063-94a5-a5c1d367be95",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:47:26.180Z"
+          },
+          {
+            "id": "d7380ec8-e393-4166-a7bd-fb88b75d8e58",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T07:47:25.433Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:47:25.446Z"
+          },
+          {
+            "id": "d318057c-b48f-4608-b649-b1147be4207e",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:47:22.251Z"
+          },
+          {
+            "id": "b4aab594-ec82-4dbb-b90b-75b01ec8f161",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:47:20.013Z"
+          },
+          {
+            "id": "b9e2e692-112d-4366-8c1f-a9e681af209f",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:47:19.706Z"
+          },
+          {
+            "id": "5fdbb02d-232d-417a-a4fa-77daa2ee528b",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T07:47:19.387Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:47:19.396Z"
+          },
+          {
+            "id": "5dab17e8-dada-4e54-973b-e7652da71d80",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:47:19.089Z"
+          },
+          {
+            "id": "839058c7-933f-442d-a0a5-0ae3b6b69ca9",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:47:18.788Z"
+          },
+          {
+            "id": "b1311e02-c4e0-438a-b945-2cb55fb2882e",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T07:47:18.165Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:47:18.176Z"
+          },
+          {
+            "id": "2f8bcf28-a36b-4f33-8614-39fa86cdfdc1",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:44:43.810Z"
+          },
+          {
+            "id": "aed6b754-ffd4-4074-8c0d-647d9a7263a5",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T07:44:43.572Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:44:43.580Z"
+          },
+          {
+            "id": "64982828-5b1e-4520-abbc-e1978e800c3c",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:44:40.589Z"
+          },
+          {
+            "id": "9a06d845-208d-4f90-8a39-e9131957f2fb",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:44:38.100Z"
+          },
+          {
+            "id": "fe5b5cd4-a445-4e26-bc75-8edfa6ad00d3",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:44:37.457Z"
+          },
+          {
+            "id": "96d43eb3-8a08-4813-a54a-e932fe228ca3",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T07:44:37.201Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:44:37.210Z"
+          },
+          {
+            "id": "04bb4c4f-d0fa-42bf-b367-16872171a7ab",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:44:36.969Z"
+          },
+          {
+            "id": "b3a5f0ed-336f-4a99-ab9c-e89f5a1eea06",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:44:36.683Z"
+          },
+          {
+            "id": "13dcedd2-6793-4f1f-927d-7756596c4e58",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T07:44:36.063Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:44:36.078Z"
+          },
+          {
+            "id": "e578b37c-d701-4391-853d-af7390fa4e30",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:38:44.201Z"
+          },
+          {
+            "id": "9c2f8a20-37e7-4f21-86d0-87188f28691a",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T07:38:42.521Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:38:42.528Z"
+          },
+          {
+            "id": "4d9faef3-c688-47d4-9382-45a88f97032f",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:38:39.420Z"
+          },
+          {
+            "id": "09e318c5-f6ea-43bb-92e3-33fbdaaaa42f",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:38:36.448Z"
+          },
+          {
+            "id": "e53781bc-01e6-4309-b45c-5442eeadc154",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:38:36.134Z"
+          },
+          {
+            "id": "f11d3af7-f005-4566-910f-8be7e16c0d35",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T07:38:35.833Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:38:35.838Z"
+          },
+          {
+            "id": "9e9a4c75-a2c8-457a-a10c-3c3b9ab8ec9d",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:38:35.496Z"
+          },
+          {
+            "id": "3840a732-6b47-4e46-b874-07b484932d1c",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:38:35.116Z"
+          },
+          {
+            "id": "d9307fc2-7d70-4b86-baae-c6210642e31a",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T07:38:34.402Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:38:34.416Z"
+          },
+          {
+            "id": "fbf597bc-619a-445e-b720-f998d0db85b9",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:36:59.768Z"
+          },
+          {
+            "id": "84fc5f8c-7f00-42b4-8935-6763787e298e",
+            "type": "milestone",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:36:55.062Z"
+          },
+          {
+            "id": "3cfd9b8f-68b9-496b-92fa-25fda9dc4bc7",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "objective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:36:54.653Z"
+          },
+          {
+            "id": "6babeb35-6eec-4ddf-8850-1f910f85a380",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-09-04T07:36:54.214Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:36:54.222Z"
+          },
+          {
+            "id": "193ee19a-e331-40f6-9711-ba5e6a5e4bfd",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:36:53.874Z"
+          },
+          {
+            "id": "389f5c16-e5d5-420d-a9e0-d7b7af3bed68",
+            "type": "course",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": "1970-01-01T00:00:00.000Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:36:53.497Z"
+          },
+          {
+            "id": "9676d0b9-89bd-4c88-9167-ef359bf4f156",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-04T07:36:52.799Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:36:52.807Z"
+          },
+          {
+            "id": "ebf14c48-f033-48f1-9297-1b9ef6a27467",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:13:03.645Z"
+          },
+          {
+            "id": "e860d66e-24bb-4e48-b53a-506cb5856c0c",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T07:13:02.827Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:13:02.844Z"
+          },
+          {
+            "id": "755b069a-94c9-4f58-a6db-0150c96721ee",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:06:12.517Z"
+          },
+          {
+            "id": "5e8a4248-8869-418c-8134-3cc00bcabcd7",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-08-28T07:06:11.962Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T07:06:11.968Z"
+          },
+          {
+            "id": "8f2b6b8f-52fb-4232-b5fb-c29208e6d546",
+            "type": "milestone",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-11-22T06:27:29.782Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T06:27:29.784Z"
+          },
+          {
+            "id": "8fcde792-56c0-4e78-8773-9b9d059c0358",
+            "type": "mentoring",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T06:27:29.564Z"
+          },
+          {
+            "id": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "type": "project",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T06:27:29.343Z"
+          },
+          {
+            "id": "1ab170ab-ad39-40a8-b854-3186ee951002",
+            "type": "project",
+            "classification": "mandatory",
+            "scoringMode": "subjective",
+            "dueDate": "2026-11-01T06:27:29.117Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T06:27:29.119Z"
+          },
+          {
+            "id": "d5341ffb-49a3-41e1-9ca3-65633fd1d4f5",
+            "type": "assignment",
+            "classification": "optional",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T06:27:28.883Z"
+          },
+          {
+            "id": "6922f50f-7871-49c7-933d-50f467872815",
+            "type": "assignment",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-10-18T06:27:28.657Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T06:27:28.659Z"
+          },
+          {
+            "id": "9e6fae8d-aafa-43cb-a58c-21e4157dfc4e",
+            "type": "course",
+            "classification": "certificate",
+            "scoringMode": "subjective",
+            "dueDate": null,
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T06:27:28.414Z"
+          },
+          {
+            "id": "c4b68715-5cbb-46ea-b751-1260af92440d",
+            "type": "course",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-10-04T06:27:27.962Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T06:27:27.964Z"
+          },
+          {
+            "id": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-27T06:27:27.727Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T06:27:27.729Z"
+          },
+          {
+            "id": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+            "type": "session",
+            "classification": "mandatory",
+            "scoringMode": "objective",
+            "dueDate": "2026-09-20T06:27:27.229Z",
+            "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "createdAt": "2026-08-21T06:27:27.253Z"
+          }
+        ]
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-005: GET /modules/:id returns valid module object",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:05.858Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/modules/8b5c8cf4-985f-41e5-81b1-417c715a4181",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 548,
+        "json": {
+          "id": "8b5c8cf4-985f-41e5-81b1-417c715a4181",
+          "type": "milestone",
+          "classification": "optional",
+          "scoringMode": "subjective",
+          "dueDate": "1970-01-01T00:00:00.000Z",
+          "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+          "createdAt": "2026-08-21T08:15:04.359Z"
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-006: GET /modules/:id returns 404 for non-existent UUID",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:06.090Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/modules/00000000-0000-0000-0000-000000000000",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 404,
+        "durationMs": 231,
+        "json": {
+          "error": "Module not found"
+        }
+      }
+    },
+    {
+      "group": "Group 3: Enrollment Management (FR003, FR004)",
+      "name": "TC-ENR-001: Student enrolls in module (status: enrolled)",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:06.954Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/enrollments",
+        "auth": "Bearer (Student)",
+        "body": {
+          "moduleId": "22735f82-5147-4c4d-b1e9-3df854e891d8"
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 585,
+        "json": {
+          "id": "d05dafbb-40a8-4f5b-836d-dfd279bf563b",
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "moduleId": "22735f82-5147-4c4d-b1e9-3df854e891d8",
+          "status": "enrolled"
+        }
+      }
+    },
+    {
+      "group": "Group 3: Enrollment Management (FR003, FR004)",
+      "name": "TC-ENR-002: GET /enrollments returns student enrolled list",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:07.501Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/enrollments",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 545,
+        "json": [
+          {
+            "id": "4420a622-9400-4648-ad07-499c33a78fb2",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+            "status": "completed"
+          },
+          {
+            "id": "2e8cf239-cbd9-40bb-ae0a-ca72836d1b7f",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+            "status": "completed"
+          },
+          {
+            "id": "34987d80-8758-4bb2-9c4b-3d734cb27c34",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "c4b68715-5cbb-46ea-b751-1260af92440d",
+            "status": "completed"
+          },
+          {
+            "id": "c2b18c2a-fb4b-44d4-9a96-8915833622b1",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "9e6fae8d-aafa-43cb-a58c-21e4157dfc4e",
+            "status": "completed"
+          },
+          {
+            "id": "d91fa5bf-cd57-437a-b185-4a338f2f8d80",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "6922f50f-7871-49c7-933d-50f467872815",
+            "status": "completed"
+          },
+          {
+            "id": "2a8a6e24-5b09-41d4-a71b-835416491b56",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "d5341ffb-49a3-41e1-9ca3-65633fd1d4f5",
+            "status": "completed"
+          },
+          {
+            "id": "91fd1068-2f0e-4108-870f-e7c78cc1ebdb",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "1ab170ab-ad39-40a8-b854-3186ee951002",
+            "status": "completed"
+          },
+          {
+            "id": "631392ef-e148-4100-bd2a-55c40ade16a5",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "status": "completed"
+          },
+          {
+            "id": "2c5e6086-5b31-4d9b-9d52-ac65b4f3472f",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "8fcde792-56c0-4e78-8773-9b9d059c0358",
+            "status": "enrolled"
+          },
+          {
+            "id": "a71d9c20-2dd5-4a8f-9096-57b4e4bc2cf2",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "8f2b6b8f-52fb-4232-b5fb-c29208e6d546",
+            "status": "enrolled"
+          },
+          {
+            "id": "d089cd07-138a-4038-92b9-db343b5559c0",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "5e8a4248-8869-418c-8134-3cc00bcabcd7",
+            "status": "completed"
+          },
+          {
+            "id": "7ea613be-27c3-40e0-a5ea-2f1baaa66bde",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "e860d66e-24bb-4e48-b53a-506cb5856c0c",
+            "status": "completed"
+          },
+          {
+            "id": "66ef53c7-9922-4af0-a36b-ecd09e4e83be",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "fbf597bc-619a-445e-b720-f998d0db85b9",
+            "status": "completed"
+          },
+          {
+            "id": "50309648-0c68-4511-a2a7-917972b24e1c",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "4d9faef3-c688-47d4-9382-45a88f97032f",
+            "status": "completed"
+          },
+          {
+            "id": "de512ed4-f856-43c9-9b65-4bb30b9abd66",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "64982828-5b1e-4520-abbc-e1978e800c3c",
+            "status": "completed"
+          },
+          {
+            "id": "23b4ede3-25b2-46d0-a939-a8fb3f695244",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "d318057c-b48f-4608-b649-b1147be4207e",
+            "status": "completed"
+          },
+          {
+            "id": "d9d1bba6-f37c-4634-9b5a-c44eeb2ff5c2",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "124c69bf-25f2-41cf-a240-fc0d0375119d",
+            "status": "completed"
+          },
+          {
+            "id": "4c031c00-8e2d-4701-89f6-123acd581405",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "1bd018f6-617e-4748-97e9-300fd22e0c93",
+            "status": "completed"
+          },
+          {
+            "id": "51154353-0211-45b1-979d-934815465ef9",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "a769feb6-72d6-4be7-a7d6-e2e70b58981e",
+            "status": "completed"
+          },
+          {
+            "id": "69c240ab-3d6c-4f4f-9fdd-868ed5bfd922",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "f000f77b-6b05-49dc-b81c-f6a21f066e2a",
+            "status": "completed"
+          },
+          {
+            "id": "c7fddaa9-d464-4bc5-a322-efa98a2163fe",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "6def7718-585f-4e52-8ebd-1a323d3f4be8",
+            "status": "completed"
+          },
+          {
+            "id": "eb85a59e-fb2c-41d2-9e5d-bcaae72427ee",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "e02ca8cb-482c-4906-ac89-e998201615a6",
+            "status": "completed"
+          },
+          {
+            "id": "d05dafbb-40a8-4f5b-836d-dfd279bf563b",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "22735f82-5147-4c4d-b1e9-3df854e891d8",
+            "status": "enrolled"
+          }
+        ]
+      }
+    },
+    {
+      "group": "Group 3: Enrollment Management (FR003, FR004)",
+      "name": "TC-ENR-003: PATCH /enrollments/:id/complete marks status as completed",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:08.523Z",
+      "request": {
+        "type": "PATCH",
+        "endpoint": "/enrollments/d05dafbb-40a8-4f5b-836d-dfd279bf563b/complete",
+        "auth": "Bearer (Student)",
+        "body": {}
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 1022,
+        "json": {
+          "id": "d05dafbb-40a8-4f5b-836d-dfd279bf563b",
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "moduleId": "22735f82-5147-4c4d-b1e9-3df854e891d8",
+          "status": "completed"
+        }
+      }
+    },
+    {
+      "group": "Group 3: Enrollment Management (FR003, FR004)",
+      "name": "TC-ENR-004: PATCH /enrollments/:id/complete returns 404 for invalid ID",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:08.833Z",
+      "request": {
+        "type": "PATCH",
+        "endpoint": "/enrollments/00000000-0000-0000-0000-000000000000/complete",
+        "auth": "Bearer (Student)",
+        "body": {}
+      },
+      "response": {
+        "statusCode": 404,
+        "durationMs": 310,
+        "json": {
+          "error": "Enrollment not found"
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-001: Objective submission triggers AI Coach auto-scoring",
+      "passed": true,
+      "details": "Status: pending",
+      "executedAt": "2026-08-21T08:15:12.514Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/submissions",
+        "auth": "Bearer (Student)",
+        "body": {
+          "moduleId": "92d78afa-4267-4849-adc4-5838fbc4b478",
+          "contentRef": "Attended session and completed attendance quiz with 100% score"
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 2961,
+        "json": {
+          "id": "571a677e-3966-4f4e-9eea-f01bc5eca4b3",
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "moduleId": "92d78afa-4267-4849-adc4-5838fbc4b478",
+          "submittedAt": "2026-08-21T08:15:09.853Z",
+          "contentRef": "Attended session and completed attendance quiz with 100% score",
+          "status": "pending",
+          "teamId": null
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-002: Subjective submission placed in pending queue",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:13.338Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/submissions",
+        "auth": "Bearer (Student)",
+        "body": {
+          "moduleId": "7de91e5f-0a14-4d42-aa27-9b7065581aa7",
+          "contentRef": "https://github.com/student/cloud-native-capstone"
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 823,
+        "json": {
+          "id": "6ca93868-47a7-4a72-8f63-66ac5cab9866",
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "moduleId": "7de91e5f-0a14-4d42-aa27-9b7065581aa7",
+          "submittedAt": "2026-08-21T08:15:12.822Z",
+          "contentRef": "https://github.com/student/cloud-native-capstone",
+          "status": "pending",
+          "teamId": null
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-003: Katalyst Management views pending review queue",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:14.258Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/submissions",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 917,
+        "json": [
+          {
+            "id": "556ff285-8ce7-4fd9-88fd-14421ba28489",
+            "userId": "1de5ce00-ab0d-41e4-94a0-8a8e3a29a360",
+            "moduleId": "6922f50f-7871-49c7-933d-50f467872815",
+            "submittedAt": "2026-06-22T06:28:49.079Z",
+            "contentRef": "Project repo: https://github.com/katalyst/open-innov",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "66792f70-927d-4235-8f7c-802457770682",
+            "userId": "23552087-5304-450e-970d-559b5b48d785",
+            "moduleId": "d5341ffb-49a3-41e1-9ca3-65633fd1d4f5",
+            "submittedAt": "2026-06-26T06:28:36.516Z",
+            "contentRef": "Completed all quiz questions with 92% score",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "dc61f260-65f1-4d19-9616-f13527fbb3ce",
+            "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+            "moduleId": "c4b68715-5cbb-46ea-b751-1260af92440d",
+            "submittedAt": "2026-06-26T06:28:54.124Z",
+            "contentRef": "Video presentation: https://loom.com/share/demo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "0a828c40-ad75-4b0f-820a-9e395adfd1b4",
+            "userId": "23552087-5304-450e-970d-559b5b48d785",
+            "moduleId": "8f2b6b8f-52fb-4232-b5fb-c29208e6d546",
+            "submittedAt": "2026-06-30T06:28:37.089Z",
+            "contentRef": "Milestone reflection: https://docs.google.com/katalyst-milestone",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "a2d7ccea-e262-4371-856e-dcd68e45c0cb",
+            "userId": "de761a46-1444-456a-8f62-73b979f98707",
+            "moduleId": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+            "submittedAt": "2026-06-30T06:28:56.790Z",
+            "contentRef": "https://github.com/student/project-repo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "de05293b-546b-46a1-ae3b-9d743df82b36",
+            "userId": "fc432d26-dc87-45f2-b577-7c75d0f794b7",
+            "moduleId": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+            "submittedAt": "2026-06-30T06:29:03.112Z",
+            "contentRef": "Video presentation: https://loom.com/share/demo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "1cf71d20-f12c-4815-92c6-0b99c168aae0",
+            "userId": "edceaf44-b6bd-4e0e-b816-6cd6e57572ad",
+            "moduleId": "8f2b6b8f-52fb-4232-b5fb-c29208e6d546",
+            "submittedAt": "2026-07-02T06:28:40.009Z",
+            "contentRef": "https://drive.google.com/file/sample1",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "d06f9e07-adb9-4583-bcdc-a06acc653ed4",
+            "userId": "de761a46-1444-456a-8f62-73b979f98707",
+            "moduleId": "c4b68715-5cbb-46ea-b751-1260af92440d",
+            "submittedAt": "2026-07-08T06:28:56.568Z",
+            "contentRef": "Video presentation: https://loom.com/share/demo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "bcc5a51c-9984-4c07-9d7d-e76e1c65823e",
+            "userId": "7ad66f05-9a2a-4b47-8805-9a8e94d6fa47",
+            "moduleId": "9e6fae8d-aafa-43cb-a58c-21e4157dfc4e",
+            "submittedAt": "2026-07-09T06:28:25.831Z",
+            "contentRef": "Mentoring session notes submitted to portal",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "e434d62b-f666-48d1-a05a-b16267e1c125",
+            "userId": "c3021d2d-6d4a-4d92-9759-39abd4bbac96",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-10T06:29:07.348Z",
+            "contentRef": "https://github.com/student/project-repo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "f3337b92-c5ef-403d-b668-5f70f144f59b",
+            "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-11T06:28:53.008Z",
+            "contentRef": "Submitted via Katalyst Konnect portal — ref #7823",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "16f5ff91-0e76-4c93-8a77-84ad82a30d6c",
+            "userId": "fc432d26-dc87-45f2-b577-7c75d0f794b7",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-12T06:29:03.334Z",
+            "contentRef": "Project repo: https://github.com/katalyst/open-innov",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "22057fd8-bb61-4b98-9255-8b8b83ac973d",
+            "userId": "23552087-5304-450e-970d-559b5b48d785",
+            "moduleId": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+            "submittedAt": "2026-07-13T06:28:35.559Z",
+            "contentRef": "Attended full session — Certificate #KAT-2024-001",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "e2b6eabb-b851-4765-a666-7128d468786d",
+            "userId": "c3021d2d-6d4a-4d92-9759-39abd4bbac96",
+            "moduleId": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+            "submittedAt": "2026-07-14T06:29:05.954Z",
+            "contentRef": "Project repo: https://github.com/katalyst/open-innov",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "2605933f-b6f6-4a4a-a88f-3f6e1144a2cf",
+            "userId": "c6414163-d17d-40d9-931c-95c8c91c34b2",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-15T06:28:27.955Z",
+            "contentRef": "Completed all quiz questions with 92% score",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "433afe04-c47c-462d-9459-74cf7b7e34c2",
+            "userId": "1de5ce00-ab0d-41e4-94a0-8a8e3a29a360",
+            "moduleId": "1ab170ab-ad39-40a8-b854-3186ee951002",
+            "submittedAt": "2026-07-15T06:28:48.607Z",
+            "contentRef": "Video presentation: https://loom.com/share/demo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "c1667e15-e053-4df3-8aca-766aebd4c2c1",
+            "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+            "moduleId": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+            "submittedAt": "2026-07-16T06:28:52.559Z",
+            "contentRef": "https://github.com/student/project-repo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "333463df-8d5c-4e43-9d39-26b23d9a9225",
+            "userId": "2e5a7468-f776-407e-ac83-fc1de68f5ef7",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-17T06:28:43.453Z",
+            "contentRef": "Mentoring session notes submitted to portal",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "9cca4c23-d6c6-452b-a51b-ef2424d01598",
+            "userId": "3950f239-e62f-4f16-811f-64e33b73139c",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-18T06:28:51.192Z",
+            "contentRef": "Submitted via Katalyst Konnect portal — ref #7823",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "046fc292-cff1-42c6-9ad3-00aa618f44cb",
+            "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+            "moduleId": "8f2b6b8f-52fb-4232-b5fb-c29208e6d546",
+            "submittedAt": "2026-07-18T06:28:52.783Z",
+            "contentRef": "https://notion.so/writeup/case-study",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "fd614244-603e-41ad-a74a-2fc7af8ecec4",
+            "userId": "1c69d316-3bc2-4516-bd04-9b59d907330e",
+            "moduleId": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+            "submittedAt": "2026-07-18T06:28:58.805Z",
+            "contentRef": "Completed all quiz questions with 92% score",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "7b3916e4-5830-4a1b-950f-960cc61d2646",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "c4b68715-5cbb-46ea-b751-1260af92440d",
+            "submittedAt": "2026-07-19T06:28:23.772Z",
+            "contentRef": "Submitted via Katalyst Konnect portal — ref #7823",
+            "status": "pending",
+            "teamId": "89f3d281-29c3-49e8-8792-2b4f86641546"
+          },
+          {
+            "id": "7c5983c4-31e9-42ac-873c-011947b99c16",
+            "userId": "6a080326-3041-4f6f-a52c-690f65934d2e",
+            "moduleId": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+            "submittedAt": "2026-07-19T06:28:42.038Z",
+            "contentRef": "https://drive.google.com/file/sample1",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "ce31c8d0-891e-4179-b76e-04a22cc4d1ec",
+            "userId": "fc432d26-dc87-45f2-b577-7c75d0f794b7",
+            "moduleId": "9e6fae8d-aafa-43cb-a58c-21e4157dfc4e",
+            "submittedAt": "2026-07-22T06:29:02.225Z",
+            "contentRef": "https://github.com/student/project-repo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "5bcf6c83-5a6d-422a-b5c9-20d087cf2ac7",
+            "userId": "192d1699-5845-4e75-a5fb-333b20f4617b",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-25T06:28:47.982Z",
+            "contentRef": "Attended full session — Certificate #KAT-2024-001",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "c7fde78a-aa74-4163-8c0e-f73397128f68",
+            "userId": "7ad66f05-9a2a-4b47-8805-9a8e94d6fa47",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-26T06:28:26.293Z",
+            "contentRef": "https://drive.google.com/file/sample1",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "3fc6e29e-a426-489d-8ef3-5a5b049532e3",
+            "userId": "edceaf44-b6bd-4e0e-b816-6cd6e57572ad",
+            "moduleId": "1ab170ab-ad39-40a8-b854-3186ee951002",
+            "submittedAt": "2026-07-27T06:28:38.235Z",
+            "contentRef": "https://github.com/student/project-repo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "7321858a-88ff-4f0b-ab0a-bdc310e12acb",
+            "userId": "3051e42c-be58-4a0c-8470-4164682a43e7",
+            "moduleId": "c4b68715-5cbb-46ea-b751-1260af92440d",
+            "submittedAt": "2026-07-27T06:29:00.327Z",
+            "contentRef": "https://drive.google.com/file/sample1",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "67886e7d-bf31-4bd1-a128-7135a0fa9eed",
+            "userId": "4f4e0049-bf61-4a22-b4f6-ee8f94d5d0cc",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-28T06:28:33.756Z",
+            "contentRef": "Video presentation: https://loom.com/share/demo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "9cdd331f-9bb0-4b5c-8a74-8bf3aaec1423",
+            "userId": "cca7f41e-7551-4edd-bc79-7cc2a1442f21",
+            "moduleId": "c4b68715-5cbb-46ea-b751-1260af92440d",
+            "submittedAt": "2026-07-29T06:28:29.808Z",
+            "contentRef": "https://drive.google.com/file/sample1",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "e2ca06bb-a630-482c-8e69-01d84f950ce4",
+            "userId": "1c69d316-3bc2-4516-bd04-9b59d907330e",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-29T06:28:57.917Z",
+            "contentRef": "Mentoring session notes submitted to portal",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "9f824738-1f1b-4c6d-8f67-ee4f8b8d10f2",
+            "userId": "edceaf44-b6bd-4e0e-b816-6cd6e57572ad",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "submittedAt": "2026-07-31T06:28:39.561Z",
+            "contentRef": "Milestone reflection: https://docs.google.com/katalyst-milestone",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "8a1a9fa1-f7e1-4a16-99b4-c8c8ed0d75b0",
+            "userId": "c3021d2d-6d4a-4d92-9759-39abd4bbac96",
+            "moduleId": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+            "submittedAt": "2026-08-01T06:29:05.648Z",
+            "contentRef": "https://notion.so/writeup/case-study",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "bd290585-37df-48e5-9d94-81e3a7cca38f",
+            "userId": "6a080326-3041-4f6f-a52c-690f65934d2e",
+            "moduleId": "8fcde792-56c0-4e78-8773-9b9d059c0358",
+            "submittedAt": "2026-08-02T06:28:42.957Z",
+            "contentRef": "https://github.com/student/project-repo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "124e89cd-a22b-4a62-900b-dd2e6256b2df",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "1ab170ab-ad39-40a8-b854-3186ee951002",
+            "submittedAt": "2026-08-06T06:28:25.374Z",
+            "contentRef": "https://drive.google.com/file/sample1",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "05d908a3-7c46-485a-add0-75bcb9a42a70",
+            "userId": "2e5a7468-f776-407e-ac83-fc1de68f5ef7",
+            "moduleId": "c4b68715-5cbb-46ea-b751-1260af92440d",
+            "submittedAt": "2026-08-09T06:28:45.247Z",
+            "contentRef": "Milestone reflection: https://docs.google.com/katalyst-milestone",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "05ca4a88-ed91-4e37-a26d-467e18e652f2",
+            "userId": "3051e42c-be58-4a0c-8470-4164682a43e7",
+            "moduleId": "9e6fae8d-aafa-43cb-a58c-21e4157dfc4e",
+            "submittedAt": "2026-08-09T06:29:02.005Z",
+            "contentRef": "Project repo: https://github.com/katalyst/open-innov",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "ed232e58-7067-4eb8-a9bc-30d77fb0071f",
+            "userId": "3950f239-e62f-4f16-811f-64e33b73139c",
+            "moduleId": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+            "submittedAt": "2026-08-10T06:28:50.966Z",
+            "contentRef": "Attended full session — Certificate #KAT-2024-001",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "ca358925-b1e2-418b-acc4-7eb3098f8ea9",
+            "userId": "23552087-5304-450e-970d-559b5b48d785",
+            "moduleId": "6922f50f-7871-49c7-933d-50f467872815",
+            "submittedAt": "2026-08-11T06:28:35.798Z",
+            "contentRef": "Completed all quiz questions with 92% score",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "8c11432c-b5bf-40d0-b858-6ebb3949fc2d",
+            "userId": "fc432d26-dc87-45f2-b577-7c75d0f794b7",
+            "moduleId": "1ab170ab-ad39-40a8-b854-3186ee951002",
+            "submittedAt": "2026-08-13T06:29:02.449Z",
+            "contentRef": "https://github.com/student/project-repo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "7b0ecb95-0943-46b5-8f93-038704995272",
+            "userId": "cca7f41e-7551-4edd-bc79-7cc2a1442f21",
+            "moduleId": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+            "submittedAt": "2026-08-17T06:28:30.054Z",
+            "contentRef": "https://github.com/student/project-repo",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "428d1457-3fc6-41bf-a784-daac04342f03",
+            "userId": "fc432d26-dc87-45f2-b577-7c75d0f794b7",
+            "moduleId": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+            "submittedAt": "2026-08-17T06:29:02.669Z",
+            "contentRef": "https://notion.so/writeup/case-study",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "22102175-20a0-4aac-9751-0eaff772f095",
+            "userId": "5721a23b-ac5e-49ab-a69f-0ba154e7a0c6",
+            "moduleId": "d5341ffb-49a3-41e1-9ca3-65633fd1d4f5",
+            "submittedAt": "2026-08-17T06:29:04.314Z",
+            "contentRef": "Attended full session — Certificate #KAT-2024-001",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "5b0c3a97-66c2-4bed-aa09-6e46dce86a81",
+            "userId": "2e5a7468-f776-407e-ac83-fc1de68f5ef7",
+            "moduleId": "6922f50f-7871-49c7-933d-50f467872815",
+            "submittedAt": "2026-08-20T06:28:44.563Z",
+            "contentRef": "Project repo: https://github.com/katalyst/open-innov",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "b1ca3470-ad5b-4714-9d56-b241075afd15",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "5e8a4248-8869-418c-8134-3cc00bcabcd7",
+            "submittedAt": "2026-08-21T07:06:18.201Z",
+            "contentRef": "Completed all objective session quizzes and attended live session",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "ba1d842d-8d5e-49cd-8c78-07ba78ceea1c",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "ebf14c48-f033-48f1-9297-1b9ef6a27467",
+            "submittedAt": "2026-08-21T07:13:24.774Z",
+            "contentRef": "Project final report link: https://docs.google.com/proj-final",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "b937ea00-a952-460e-9210-f8fc13c445bd",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "d518068d-431d-4063-94a5-a5c1d367be95",
+            "submittedAt": "2026-08-21T07:47:54.219Z",
+            "contentRef": "Project report: https://drive.google.com/report1",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "a7d70037-fe47-4742-a7fc-851e521aee00",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "8b66f7f9-697f-44e8-a87c-a0b4166959b1",
+            "submittedAt": "2026-08-21T07:52:08.855Z",
+            "contentRef": "Attended session and completed attendance quiz with 100% score",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "8931b045-9240-4e9b-bd34-10ccb997c6ed",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "4f83f4e0-6dc9-4371-8f73-1879185ead33",
+            "submittedAt": "2026-08-21T07:54:40.184Z",
+            "contentRef": "Attended session and completed attendance quiz with 100% score",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "224bf7f2-097f-4d97-b712-b87aa289323f",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "afffa163-af50-4444-aba2-99fdcb196f23",
+            "submittedAt": "2026-08-21T07:54:49.751Z",
+            "contentRef": "https://github.com/student/cloud-native-capstone",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "817ea347-f6b2-45cb-b7a2-eab05a08a229",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "9ed3f6d7-716d-4849-9d41-87308c2fd8fb",
+            "submittedAt": "2026-08-21T07:57:00.442Z",
+            "contentRef": "Attended session and completed attendance quiz with 100% score",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "7260cd74-7140-4205-9cd4-3caa3d70c4ee",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "619a0229-c183-46d4-916f-6d03e4fa9620",
+            "submittedAt": "2026-08-21T07:59:38.272Z",
+            "contentRef": "Attended session and completed attendance quiz with 100% score",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "26ce2178-7a9e-48b4-b5ca-bfa0db69f203",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "91a1de52-1ec8-413a-b1d4-f90f03d3f7cc",
+            "submittedAt": "2026-08-21T08:13:11.002Z",
+            "contentRef": "Attended session and completed attendance quiz with 100% score",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "571a677e-3966-4f4e-9eea-f01bc5eca4b3",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "92d78afa-4267-4849-adc4-5838fbc4b478",
+            "submittedAt": "2026-08-21T08:15:09.853Z",
+            "contentRef": "Attended session and completed attendance quiz with 100% score",
+            "status": "pending",
+            "teamId": null
+          },
+          {
+            "id": "6ca93868-47a7-4a72-8f63-66ac5cab9866",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "7de91e5f-0a14-4d42-aa27-9b7065581aa7",
+            "submittedAt": "2026-08-21T08:15:12.822Z",
+            "contentRef": "https://github.com/student/cloud-native-capstone",
+            "status": "pending",
+            "teamId": null
+          }
+        ]
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-004: Students forbidden from accessing review queue (403)",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:14.262Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/submissions",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 3,
+        "json": {
+          "error": "Forbidden"
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-005: POST /submissions/:id/ai-review generates AI draft summary",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:14.869Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/submissions/6ca93868-47a7-4a72-8f63-66ac5cab9866/ai-review",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {}
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 607,
+        "json": {
+          "draftFeedback": null
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-006: Management awards XP and finalizes review with atomic transaction",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:16.810Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/submissions/6ca93868-47a7-4a72-8f63-66ac5cab9866/score",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {
+          "outcome": "approved",
+          "feedbackText": "Great architecture design and comprehensive test cases.",
+          "xpAwarded": 40
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 1940,
+        "json": {
+          "review": {
+            "id": "c44fb05c-b825-4b27-95c2-a3abf75b07c4",
+            "submissionId": "6ca93868-47a7-4a72-8f63-66ac5cab9866",
+            "reviewerType": "management",
+            "reviewerId": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "outcome": "approved",
+            "feedbackText": "Great architecture design and comprehensive test cases.",
+            "reviewedAt": "2026-08-21T08:15:15.177Z"
+          },
+          "xp": {
+            "id": "5b5998b0-bbb1-4b00-bb8f-8f8afcfdb4b5",
+            "submissionId": "6ca93868-47a7-4a72-8f63-66ac5cab9866",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T08:15:15.719Z"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 5: XP Ledger & Yearly Aggregations (FR008, FR009)",
+      "name": "TC-XP-001: Student views own total yearly XP for given year",
+      "passed": true,
+      "details": "Total XP: 610",
+      "executedAt": "2026-08-21T08:15:17.656Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/users/2779633f-f9b3-4ded-bcba-90c4dac1e847/xp?year=2026",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 845,
+        "json": {
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "year": 2026,
+          "totalXp": 610
+        }
+      }
+    },
+    {
+      "group": "Group 5: XP Ledger & Yearly Aggregations (FR008, FR009)",
+      "name": "TC-XP-002: Student views full audit ledger of XP history",
+      "passed": true,
+      "details": "Entries: 22",
+      "executedAt": "2026-08-21T08:15:18.256Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/users/2779633f-f9b3-4ded-bcba-90c4dac1e847/xp/ledger",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 597,
+        "json": [
+          {
+            "id": "5b5998b0-bbb1-4b00-bb8f-8f8afcfdb4b5",
+            "submissionId": "6ca93868-47a7-4a72-8f63-66ac5cab9866",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T08:15:15.719Z"
+          },
+          {
+            "id": "93837b72-a470-478c-b142-dd524ccc66a2",
+            "submissionId": "a0b776a6-1333-4539-b947-084d15000af3",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T08:13:22.407Z"
+          },
+          {
+            "id": "9ebd9e5f-76a2-4c62-a8e6-12acc8300ac8",
+            "submissionId": "e3b874fc-7360-403f-9adf-264cf07bd1f2",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:59:47.426Z"
+          },
+          {
+            "id": "d67dbc5c-444d-45c4-8ce4-5759ae928de8",
+            "submissionId": "e6948ff9-778b-40f0-9ad9-2b63b943f49e",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:57:06.010Z"
+          },
+          {
+            "id": "b3962830-2959-4836-8dc1-3253d0614ea2",
+            "submissionId": "86cad6e7-9720-454f-9230-95033dc5efdc",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:52:13.322Z"
+          },
+          {
+            "id": "fc09336e-ce50-46b6-951f-c7b5447f9f95",
+            "submissionId": "106ba8b6-90c9-44b5-82e1-f4af1e391c9c",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:50:33.016Z"
+          },
+          {
+            "id": "8e30b19f-65bf-457f-9175-a08ccf7769fe",
+            "submissionId": "39895d28-1c3e-4543-986e-6ece123104e7",
+            "scoredBy": "ai_coach",
+            "xpAwarded": 10,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:50:22.342Z"
+          },
+          {
+            "id": "ce83b222-2ae5-47d8-9c18-0ff5e82fb47e",
+            "submissionId": "b3bf3c5e-7527-4980-a996-7b48ea9c6e98",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:48:11.206Z"
+          },
+          {
+            "id": "e37c9605-d841-4de6-94dc-6bfcc5116333",
+            "submissionId": "e08ed849-7aeb-477c-93ec-6920e0440600",
+            "scoredBy": "ai_coach",
+            "xpAwarded": 10,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:47:49.816Z"
+          },
+          {
+            "id": "3533f988-b2a8-4156-bd0e-fb438f963ff8",
+            "submissionId": "6f43222b-e4e7-42dd-b882-c595630570cb",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:45:34.225Z"
+          },
+          {
+            "id": "9226f351-6a9c-4246-ab71-c1e1c81115c6",
+            "submissionId": "d72b57d3-ef72-497c-876a-93f7ee30dbe9",
+            "scoredBy": "ai_coach",
+            "xpAwarded": 10,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:45:03.628Z"
+          },
+          {
+            "id": "31d3ca61-d2e7-4297-b309-4d1139c208c5",
+            "submissionId": "2ae56437-a030-466a-880c-9c4e2c56b878",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:39:08.220Z"
+          },
+          {
+            "id": "32e2fb49-72a8-4165-8d6b-082d010b80fa",
+            "submissionId": "f33c548b-1273-484c-ae2a-b245386c1fbf",
+            "scoredBy": "ai_coach",
+            "xpAwarded": 10,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:38:52.414Z"
+          },
+          {
+            "id": "d627c56d-8b1e-404f-a4b9-77963fd80999",
+            "submissionId": "acb62f83-5876-4ae6-b478-c7b1dac42be1",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:13:35.720Z"
+          },
+          {
+            "id": "91533e68-84d8-4019-88b1-a8f0d9f97328",
+            "submissionId": "33ce1a24-df08-4dc9-bf0d-fab14dfb85e4",
+            "scoredBy": "ai_coach",
+            "xpAwarded": 10,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:13:18.281Z"
+          },
+          {
+            "id": "610e8204-a5e5-425b-9183-9d1ab84ca71b",
+            "submissionId": "222749d9-39d5-42fd-a024-dcdfa4dda55c",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T07:06:28.158Z"
+          },
+          {
+            "id": "6e3aab37-dab7-4f69-8c93-ff9381aa5ccb",
+            "submissionId": "a82e8be1-581f-4111-849c-09d4cdbe2c6e",
+            "scoredBy": "ai_coach",
+            "xpAwarded": 30,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T06:28:24.689Z"
+          },
+          {
+            "id": "c49157b7-39dc-4fa0-b552-840f362901a7",
+            "submissionId": "915371dc-c5fc-4095-bb3c-4111e7ddfc69",
+            "scoredBy": "ai_coach",
+            "xpAwarded": 12,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-17T06:28:24.463Z"
+          },
+          {
+            "id": "f5ef3a6f-5fd9-4bb5-980b-50c984f987e5",
+            "submissionId": "e4d64d64-f83f-417f-b0f6-082085da776e",
+            "scoredBy": "ai_coach",
+            "xpAwarded": 5,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-05T06:28:24.910Z"
+          },
+          {
+            "id": "f311dcbe-6fcc-4517-8c36-655d350772eb",
+            "submissionId": "c9049339-7694-4daa-9518-3a8e09a3a00c",
+            "scoredBy": "management",
+            "xpAwarded": 31,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-07-11T06:28:24.231Z"
+          },
+          {
+            "id": "f907c44f-4a74-46ed-826c-92112b52c5e3",
+            "submissionId": "944ba47c-21b3-45fe-b64d-4b83d7b60761",
+            "scoredBy": "management",
+            "xpAwarded": 12,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-07-05T06:28:25.598Z"
+          },
+          {
+            "id": "eaad7631-1075-4e4e-bef5-4dd25988102c",
+            "submissionId": "c50af646-6d9e-44b2-a436-8c80102cffe1",
+            "scoredBy": "management",
+            "xpAwarded": 30,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-07-03T06:28:25.153Z"
+          }
+        ]
+      }
+    },
+    {
+      "group": "Group 5: XP Ledger & Yearly Aggregations (FR008, FR009)",
+      "name": "TC-XP-003: Katalyst Management can view any student XP",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:18.871Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/users/2779633f-f9b3-4ded-bcba-90c4dac1e847/xp?year=2026",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 615,
+        "json": {
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "year": 2026,
+          "totalXp": 610
+        }
+      }
+    },
+    {
+      "group": "Group 5: XP Ledger & Yearly Aggregations (FR008, FR009)",
+      "name": "TC-XP-004: Student attempting to view another user XP gets 403 Forbidden",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:18.880Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/users/00000000-0000-0000-0000-000000000000/xp",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 8,
+        "json": {
+          "error": "Forbidden"
+        }
+      }
+    },
+    {
+      "group": "Group 6: Filtered Reports (FR010)",
+      "name": "TC-REP-001: Management generates reports filtered by moduleType",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:20.849Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/reports?moduleType=project",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 1967,
+        "json": [
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T08:15:15.719Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T08:13:22.407Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:59:47.426Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:57:06.010Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:52:13.322Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:50:33.016Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:48:11.206Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:45:34.225Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:39:08.220Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:13:35.720Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:06:28.158Z"
+          },
+          {
+            "userId": "6a080326-3041-4f6f-a52c-690f65934d2e",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-20T06:28:42.262Z"
+          },
+          {
+            "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+            "moduleType": "project",
+            "xpAwarded": 39,
+            "scoredBy": "management",
+            "createdAt": "2026-08-19T06:28:53.905Z"
+          },
+          {
+            "userId": "3950f239-e62f-4f16-811f-64e33b73139c",
+            "moduleType": "project",
+            "xpAwarded": 37,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-18T06:28:51.862Z"
+          },
+          {
+            "userId": "6a080326-3041-4f6f-a52c-690f65934d2e",
+            "moduleType": "project",
+            "xpAwarded": 39,
+            "scoredBy": "management",
+            "createdAt": "2026-08-17T06:28:42.487Z"
+          },
+          {
+            "userId": "a36f7756-c0d9-4151-8f0a-ba289e3f23ad",
+            "moduleType": "project",
+            "xpAwarded": 39,
+            "scoredBy": "management",
+            "createdAt": "2026-08-14T06:28:56.354Z"
+          },
+          {
+            "userId": "2e5a7468-f776-407e-ac83-fc1de68f5ef7",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-12T06:28:45.471Z"
+          },
+          {
+            "userId": "5721a23b-ac5e-49ab-a69f-0ba154e7a0c6",
+            "moduleType": "project",
+            "xpAwarded": 45,
+            "scoredBy": "management",
+            "createdAt": "2026-08-08T06:29:04.828Z"
+          },
+          {
+            "userId": "4f4e0049-bf61-4a22-b4f6-ee8f94d5d0cc",
+            "moduleType": "project",
+            "xpAwarded": 35,
+            "scoredBy": "management",
+            "createdAt": "2026-08-06T06:28:33.295Z"
+          },
+          {
+            "userId": "23552087-5304-450e-970d-559b5b48d785",
+            "moduleType": "project",
+            "xpAwarded": 37,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-01T06:28:35.334Z"
+          },
+          {
+            "userId": "5721a23b-ac5e-49ab-a69f-0ba154e7a0c6",
+            "moduleType": "project",
+            "xpAwarded": 34,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-31T06:29:05.136Z"
+          },
+          {
+            "userId": "3051e42c-be58-4a0c-8470-4164682a43e7",
+            "moduleType": "project",
+            "xpAwarded": 35,
+            "scoredBy": "management",
+            "createdAt": "2026-07-25T06:28:59.485Z"
+          },
+          {
+            "userId": "a36f7756-c0d9-4151-8f0a-ba289e3f23ad",
+            "moduleType": "project",
+            "xpAwarded": 42,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-25T06:28:55.916Z"
+          },
+          {
+            "userId": "de761a46-1444-456a-8f62-73b979f98707",
+            "moduleType": "project",
+            "xpAwarded": 38,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-21T06:28:57.023Z"
+          },
+          {
+            "userId": "c3021d2d-6d4a-4d92-9759-39abd4bbac96",
+            "moduleType": "project",
+            "xpAwarded": 50,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-19T06:29:07.900Z"
+          },
+          {
+            "userId": "3051e42c-be58-4a0c-8470-4164682a43e7",
+            "moduleType": "project",
+            "xpAwarded": 34,
+            "scoredBy": "management",
+            "createdAt": "2026-07-14T06:29:01.258Z"
+          },
+          {
+            "userId": "1c69d316-3bc2-4516-bd04-9b59d907330e",
+            "moduleType": "project",
+            "xpAwarded": 43,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-10T06:28:59.265Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 30,
+            "scoredBy": "management",
+            "createdAt": "2026-07-03T06:28:25.153Z"
+          },
+          {
+            "userId": "192d1699-5845-4e75-a5fb-333b20f4617b",
+            "moduleType": "project",
+            "xpAwarded": 46,
+            "scoredBy": "management",
+            "createdAt": "2026-06-27T06:28:46.337Z"
+          }
+        ]
+      }
+    },
+    {
+      "group": "Group 6: Filtered Reports (FR010)",
+      "name": "TC-REP-002: Management generates reports filtered by student userId",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:22.194Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/reports?userId=2779633f-f9b3-4ded-bcba-90c4dac1e847",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 1340,
+        "json": [
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T08:15:15.719Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T08:13:22.407Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:59:47.426Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:57:06.010Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:52:13.322Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:50:33.016Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T07:50:22.342Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:48:11.206Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T07:47:49.816Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:45:34.225Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T07:45:03.628Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:39:08.220Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T07:38:52.414Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:13:35.720Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T07:13:18.281Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:06:28.158Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "assignment",
+            "xpAwarded": 30,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T06:28:24.689Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "milestone",
+            "xpAwarded": 12,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-17T06:28:24.463Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 5,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-05T06:28:24.910Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "course",
+            "xpAwarded": 31,
+            "scoredBy": "management",
+            "createdAt": "2026-07-11T06:28:24.231Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "mentoring",
+            "xpAwarded": 12,
+            "scoredBy": "management",
+            "createdAt": "2026-07-05T06:28:25.598Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 30,
+            "scoredBy": "management",
+            "createdAt": "2026-07-03T06:28:25.153Z"
+          }
+        ]
+      }
+    },
+    {
+      "group": "Group 6: Filtered Reports (FR010)",
+      "name": "TC-REP-003: Management generates reports filtered by date range",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:23.883Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/reports?dateFrom=2026-07-22T08:15:22.196Z&dateTo=2026-08-21T08:15:22.196Z",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 1687,
+        "json": [
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T08:15:15.719Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T08:13:22.407Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:59:47.426Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:57:06.010Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:52:13.322Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:50:33.016Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T07:50:22.342Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:48:11.206Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T07:47:49.816Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:45:34.225Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T07:45:03.628Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:39:08.220Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T07:38:52.414Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:13:35.720Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T07:13:18.281Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-21T07:06:28.158Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "assignment",
+            "xpAwarded": 30,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-21T06:28:24.689Z"
+          },
+          {
+            "userId": "c3021d2d-6d4a-4d92-9759-39abd4bbac96",
+            "moduleType": "course",
+            "xpAwarded": 25,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-20T06:29:06.479Z"
+          },
+          {
+            "userId": "6a080326-3041-4f6f-a52c-690f65934d2e",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "management",
+            "createdAt": "2026-08-20T06:28:42.262Z"
+          },
+          {
+            "userId": "5721a23b-ac5e-49ab-a69f-0ba154e7a0c6",
+            "moduleType": "assignment",
+            "xpAwarded": 25,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-19T06:29:04.006Z"
+          },
+          {
+            "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+            "moduleType": "project",
+            "xpAwarded": 39,
+            "scoredBy": "management",
+            "createdAt": "2026-08-19T06:28:53.905Z"
+          },
+          {
+            "userId": "5721a23b-ac5e-49ab-a69f-0ba154e7a0c6",
+            "moduleType": "session",
+            "xpAwarded": 18,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-18T06:29:04.538Z"
+          },
+          {
+            "userId": "5721a23b-ac5e-49ab-a69f-0ba154e7a0c6",
+            "moduleType": "session",
+            "xpAwarded": 8,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-18T06:29:03.556Z"
+          },
+          {
+            "userId": "1c69d316-3bc2-4516-bd04-9b59d907330e",
+            "moduleType": "course",
+            "xpAwarded": 30,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-18T06:28:58.137Z"
+          },
+          {
+            "userId": "3950f239-e62f-4f16-811f-64e33b73139c",
+            "moduleType": "project",
+            "xpAwarded": 37,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-18T06:28:51.862Z"
+          },
+          {
+            "userId": "fc432d26-dc87-45f2-b577-7c75d0f794b7",
+            "moduleType": "course",
+            "xpAwarded": 24,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-17T06:29:02.887Z"
+          },
+          {
+            "userId": "2e5a7468-f776-407e-ac83-fc1de68f5ef7",
+            "moduleType": "course",
+            "xpAwarded": 37,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-17T06:28:45.031Z"
+          },
+          {
+            "userId": "2e5a7468-f776-407e-ac83-fc1de68f5ef7",
+            "moduleType": "milestone",
+            "xpAwarded": 12,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-17T06:28:43.912Z"
+          },
+          {
+            "userId": "6a080326-3041-4f6f-a52c-690f65934d2e",
+            "moduleType": "project",
+            "xpAwarded": 39,
+            "scoredBy": "management",
+            "createdAt": "2026-08-17T06:28:42.487Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "milestone",
+            "xpAwarded": 12,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-17T06:28:24.463Z"
+          },
+          {
+            "userId": "c6414163-d17d-40d9-931c-95c8c91c34b2",
+            "moduleType": "course",
+            "xpAwarded": 28,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-16T06:28:27.664Z"
+          },
+          {
+            "userId": "de761a46-1444-456a-8f62-73b979f98707",
+            "moduleType": "mentoring",
+            "xpAwarded": 17,
+            "scoredBy": "management",
+            "createdAt": "2026-08-15T06:28:57.695Z"
+          },
+          {
+            "userId": "c6414163-d17d-40d9-931c-95c8c91c34b2",
+            "moduleType": "course",
+            "xpAwarded": 28,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-15T06:28:28.345Z"
+          },
+          {
+            "userId": "1c69d316-3bc2-4516-bd04-9b59d907330e",
+            "moduleType": "milestone",
+            "xpAwarded": 11,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-14T06:28:58.359Z"
+          },
+          {
+            "userId": "a36f7756-c0d9-4151-8f0a-ba289e3f23ad",
+            "moduleType": "project",
+            "xpAwarded": 39,
+            "scoredBy": "management",
+            "createdAt": "2026-08-14T06:28:56.354Z"
+          },
+          {
+            "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+            "moduleType": "assignment",
+            "xpAwarded": 32,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-13T06:28:53.461Z"
+          },
+          {
+            "userId": "7ad66f05-9a2a-4b47-8805-9a8e94d6fa47",
+            "moduleType": "milestone",
+            "xpAwarded": 17,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-13T06:28:26.964Z"
+          },
+          {
+            "userId": "192d1699-5845-4e75-a5fb-333b20f4617b",
+            "moduleType": "assignment",
+            "xpAwarded": 16,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-12T06:28:45.699Z"
+          },
+          {
+            "userId": "2e5a7468-f776-407e-ac83-fc1de68f5ef7",
+            "moduleType": "project",
+            "xpAwarded": 40,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-12T06:28:45.471Z"
+          },
+          {
+            "userId": "4f4e0049-bf61-4a22-b4f6-ee8f94d5d0cc",
+            "moduleType": "assignment",
+            "xpAwarded": 24,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-12T06:28:31.476Z"
+          },
+          {
+            "userId": "3950f239-e62f-4f16-811f-64e33b73139c",
+            "moduleType": "mentoring",
+            "xpAwarded": 19,
+            "scoredBy": "management",
+            "createdAt": "2026-08-11T06:28:52.084Z"
+          },
+          {
+            "userId": "3950f239-e62f-4f16-811f-64e33b73139c",
+            "moduleType": "course",
+            "xpAwarded": 29,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-11T06:28:51.415Z"
+          },
+          {
+            "userId": "1de5ce00-ab0d-41e4-94a0-8a8e3a29a360",
+            "moduleType": "session",
+            "xpAwarded": 11,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-11T06:28:50.086Z"
+          },
+          {
+            "userId": "5721a23b-ac5e-49ab-a69f-0ba154e7a0c6",
+            "moduleType": "project",
+            "xpAwarded": 45,
+            "scoredBy": "management",
+            "createdAt": "2026-08-08T06:29:04.828Z"
+          },
+          {
+            "userId": "de761a46-1444-456a-8f62-73b979f98707",
+            "moduleType": "assignment",
+            "xpAwarded": 17,
+            "scoredBy": "management",
+            "createdAt": "2026-08-08T06:28:57.243Z"
+          },
+          {
+            "userId": "cca7f41e-7551-4edd-bc79-7cc2a1442f21",
+            "moduleType": "mentoring",
+            "xpAwarded": 25,
+            "scoredBy": "management",
+            "createdAt": "2026-08-08T06:28:30.536Z"
+          },
+          {
+            "userId": "1de5ce00-ab0d-41e4-94a0-8a8e3a29a360",
+            "moduleType": "milestone",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-06T06:28:50.525Z"
+          },
+          {
+            "userId": "6a080326-3041-4f6f-a52c-690f65934d2e",
+            "moduleType": "course",
+            "xpAwarded": 38,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-06T06:28:40.511Z"
+          },
+          {
+            "userId": "6a080326-3041-4f6f-a52c-690f65934d2e",
+            "moduleType": "session",
+            "xpAwarded": 12,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-06T06:28:40.246Z"
+          },
+          {
+            "userId": "edceaf44-b6bd-4e0e-b816-6cd6e57572ad",
+            "moduleType": "assignment",
+            "xpAwarded": 22,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-06T06:28:37.568Z"
+          },
+          {
+            "userId": "4f4e0049-bf61-4a22-b4f6-ee8f94d5d0cc",
+            "moduleType": "project",
+            "xpAwarded": 35,
+            "scoredBy": "management",
+            "createdAt": "2026-08-06T06:28:33.295Z"
+          },
+          {
+            "userId": "c6414163-d17d-40d9-931c-95c8c91c34b2",
+            "moduleType": "assignment",
+            "xpAwarded": 19,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-06T06:28:29.098Z"
+          },
+          {
+            "userId": "7ad66f05-9a2a-4b47-8805-9a8e94d6fa47",
+            "moduleType": "course",
+            "xpAwarded": 27,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-06T06:28:26.510Z"
+          },
+          {
+            "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+            "moduleType": "session",
+            "xpAwarded": 15,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-05T06:28:53.684Z"
+          },
+          {
+            "userId": "edceaf44-b6bd-4e0e-b816-6cd6e57572ad",
+            "moduleType": "session",
+            "xpAwarded": 6,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-05T06:28:39.149Z"
+          },
+          {
+            "userId": "7ad66f05-9a2a-4b47-8805-9a8e94d6fa47",
+            "moduleType": "session",
+            "xpAwarded": 16,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-05T06:28:26.732Z"
+          },
+          {
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleType": "session",
+            "xpAwarded": 5,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-05T06:28:24.910Z"
+          },
+          {
+            "userId": "3051e42c-be58-4a0c-8470-4164682a43e7",
+            "moduleType": "session",
+            "xpAwarded": 8,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-04T06:29:01.783Z"
+          },
+          {
+            "userId": "1de5ce00-ab0d-41e4-94a0-8a8e3a29a360",
+            "moduleType": "course",
+            "xpAwarded": 24,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-03T06:28:49.653Z"
+          },
+          {
+            "userId": "2e5a7468-f776-407e-ac83-fc1de68f5ef7",
+            "moduleType": "session",
+            "xpAwarded": 7,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-03T06:28:43.691Z"
+          },
+          {
+            "userId": "1c69d316-3bc2-4516-bd04-9b59d907330e",
+            "moduleType": "assignment",
+            "xpAwarded": 26,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-02T06:28:58.588Z"
+          },
+          {
+            "userId": "23552087-5304-450e-970d-559b5b48d785",
+            "moduleType": "project",
+            "xpAwarded": 37,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-08-01T06:28:35.334Z"
+          },
+          {
+            "userId": "c3021d2d-6d4a-4d92-9759-39abd4bbac96",
+            "moduleType": "course",
+            "xpAwarded": 24,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-31T06:29:06.253Z"
+          },
+          {
+            "userId": "5721a23b-ac5e-49ab-a69f-0ba154e7a0c6",
+            "moduleType": "project",
+            "xpAwarded": 34,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-31T06:29:05.136Z"
+          },
+          {
+            "userId": "23552087-5304-450e-970d-559b5b48d785",
+            "moduleType": "mentoring",
+            "xpAwarded": 11,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-31T06:28:36.279Z"
+          },
+          {
+            "userId": "7ad66f05-9a2a-4b47-8805-9a8e94d6fa47",
+            "moduleType": "session",
+            "xpAwarded": 7,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-31T06:28:26.059Z"
+          },
+          {
+            "userId": "3051e42c-be58-4a0c-8470-4164682a43e7",
+            "moduleType": "assignment",
+            "xpAwarded": 28,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-30T06:28:59.705Z"
+          },
+          {
+            "userId": "edceaf44-b6bd-4e0e-b816-6cd6e57572ad",
+            "moduleType": "course",
+            "xpAwarded": 23,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-30T06:28:38.485Z"
+          },
+          {
+            "userId": "cca7f41e-7551-4edd-bc79-7cc2a1442f21",
+            "moduleType": "session",
+            "xpAwarded": 14,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-30T06:28:30.983Z"
+          },
+          {
+            "userId": "1de5ce00-ab0d-41e4-94a0-8a8e3a29a360",
+            "moduleType": "mentoring",
+            "xpAwarded": 15,
+            "scoredBy": "management",
+            "createdAt": "2026-07-29T06:28:49.868Z"
+          },
+          {
+            "userId": "edceaf44-b6bd-4e0e-b816-6cd6e57572ad",
+            "moduleType": "assignment",
+            "xpAwarded": 20,
+            "scoredBy": "management",
+            "createdAt": "2026-07-29T06:28:38.013Z"
+          },
+          {
+            "userId": "1de5ce00-ab0d-41e4-94a0-8a8e3a29a360",
+            "moduleType": "assignment",
+            "xpAwarded": 30,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-28T06:28:48.834Z"
+          },
+          {
+            "userId": "192d1699-5845-4e75-a5fb-333b20f4617b",
+            "moduleType": "session",
+            "xpAwarded": 14,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-28T06:28:47.463Z"
+          },
+          {
+            "userId": "edceaf44-b6bd-4e0e-b816-6cd6e57572ad",
+            "moduleType": "session",
+            "xpAwarded": 8,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-28T06:28:39.789Z"
+          },
+          {
+            "userId": "3950f239-e62f-4f16-811f-64e33b73139c",
+            "moduleType": "assignment",
+            "xpAwarded": 34,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-27T06:28:51.635Z"
+          },
+          {
+            "userId": "2e5a7468-f776-407e-ac83-fc1de68f5ef7",
+            "moduleType": "assignment",
+            "xpAwarded": 24,
+            "scoredBy": "management",
+            "createdAt": "2026-07-27T06:28:44.321Z"
+          },
+          {
+            "userId": "4f4e0049-bf61-4a22-b4f6-ee8f94d5d0cc",
+            "moduleType": "session",
+            "xpAwarded": 10,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-27T06:28:31.978Z"
+          },
+          {
+            "userId": "a36f7756-c0d9-4151-8f0a-ba289e3f23ad",
+            "moduleType": "assignment",
+            "xpAwarded": 16,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-26T06:28:54.355Z"
+          },
+          {
+            "userId": "3051e42c-be58-4a0c-8470-4164682a43e7",
+            "moduleType": "project",
+            "xpAwarded": 35,
+            "scoredBy": "management",
+            "createdAt": "2026-07-25T06:28:59.485Z"
+          },
+          {
+            "userId": "a36f7756-c0d9-4151-8f0a-ba289e3f23ad",
+            "moduleType": "project",
+            "xpAwarded": 42,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-25T06:28:55.916Z"
+          },
+          {
+            "userId": "c6414163-d17d-40d9-931c-95c8c91c34b2",
+            "moduleType": "session",
+            "xpAwarded": 14,
+            "scoredBy": "ai_coach",
+            "createdAt": "2026-07-25T06:28:29.564Z"
+          }
+        ]
+      }
+    },
+    {
+      "group": "Group 6: Filtered Reports (FR010)",
+      "name": "TC-REP-004: Student attempting GET /reports receives 403 Forbidden",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:23.889Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/reports",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 4,
+        "json": {
+          "error": "Forbidden"
+        }
+      }
+    },
+    {
+      "group": "Group 7: AI Coach Services (FR014, FR025, FR026)",
+      "name": "TC-AIC-001: POST /ai-coach/nudge generates personalized motivational nudge",
+      "passed": true,
+      "details": "Preview: \"Hi Aarav Sharma, we missed you at recent Kata...\"",
+      "executedAt": "2026-08-21T08:15:24.787Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/ai-coach/nudge",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847"
+        }
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 896,
+        "json": {
+          "message": "Hi Aarav Sharma, we missed you at recent Katalyst sessions! Check your dashboard for upcoming learning modules and challenges."
+        }
+      }
+    },
+    {
+      "group": "Group 7: AI Coach Services (FR014, FR025, FR026)",
+      "name": "TC-AIC-002: GET /users/:id/progress-updates generates natural-language summary",
+      "passed": true,
+      "details": "Preview: \"Great effort, Aarav Sharma! You have earned a...\"",
+      "executedAt": "2026-08-21T08:15:25.639Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/users/2779633f-f9b3-4ded-bcba-90c4dac1e847/progress-updates",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 851,
+        "json": {
+          "update": "Great effort, Aarav Sharma! You have earned a total of 610 XP in 2026. Keep participating in upcoming modules to boost your standing!"
+        }
+      }
+    },
+    {
+      "group": "Group 7: AI Coach Services (FR014, FR025, FR026)",
+      "name": "TC-AIC-003: Students forbidden from triggering batch nudges (403)",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T08:15:25.646Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/ai-coach/nudge",
+        "auth": "Bearer (Student)",
+        "body": {
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847"
+        }
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 7,
+        "json": {
+          "error": "Forbidden"
+        }
+      }
+    }
+  ]
+}
