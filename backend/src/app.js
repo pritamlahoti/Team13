@@ -11,6 +11,7 @@ const reviewsRoutes = require('./features/reviews/reviews.routes');
 const aiCoachRoutes = require('./features/aiCoach/aiCoach.routes');
 const xpRoutes = require('./features/xp/xp.routes');
 const reportsRoutes = require('./features/reports/reports.routes');
+const adminRoutes = require('./features/admin/admin.routes');
 const teamsRoutes = require('./features/teams/teams.routes');
 const dashboardRoutes = require('./features/dashboard/dashboard.routes');
 
@@ -35,6 +36,7 @@ app.use(reviewsRoutes);
 app.use(aiCoachRoutes);
 app.use(xpRoutes);
 app.use(reportsRoutes);
+app.use(adminRoutes);
 app.use(teamsRoutes);
 app.use(dashboardRoutes);
 
