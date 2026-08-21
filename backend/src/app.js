@@ -14,6 +14,7 @@ const reportsRoutes = require('./features/reports/reports.routes');
 const adminRoutes = require('./features/admin/admin.routes');
 const teamsRoutes = require('./features/teams/teams.routes');
 const dashboardRoutes = require('./features/dashboard/dashboard.routes');
+const mentorRoutes = require('./features/mentor/mentor.routes');
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use(reportsRoutes);
 app.use(adminRoutes);
 app.use(teamsRoutes);
 app.use(dashboardRoutes);
+app.use(mentorRoutes);
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 app.use(errorHandler);
