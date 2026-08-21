@@ -94,6 +94,9 @@ async function listStudents(where, orderBy, skip, take) {
             submissions: true,
             notifications: true
           }
+        },
+        studentMentorship: {
+          select: { mentor: { select: { id: true, name: true, email: true } } }
         }
       }
     })
@@ -150,7 +153,11 @@ async function listMentors(where, orderBy, skip, take) {
         id: true,
         name: true,
         email: true,
-        createdAt: true
+        createdAt: true,
+        mentorAssignments: {
+          orderBy: { assignedAt: 'asc' },
+          select: { student: { select: { id: true, name: true, email: true } } }
+        }
       }
     })
   ]);
@@ -164,9 +171,37 @@ async function getMentor(id) {
       id: true,
       name: true,
       email: true,
-      createdAt: true
+      createdAt: true,
+      mentorAssignments: {
+        select: { student: { select: { id: true, name: true, email: true } } }
+      }
     }
   });
+}
+
+async function assignMentor(studentId, mentorId) {
+  const [student, mentor] = await Promise.all([
+    prisma.user.findFirst({ where: { id: studentId, role: 'student' }, select: { id: true } }),
+    prisma.user.findFirst({ where: { id: mentorId, role: 'katalyst_management' }, select: { id: true } })
+  ]);
+  if (!student) throw Object.assign(new Error('Student not found'), { status: 404 });
+  if (!mentor) throw Object.assign(new Error('Mentor not found'), { status: 404 });
+
+  return prisma.mentorAssignment.upsert({
+    where: { studentId },
+    update: { mentorId },
+    create: { studentId, mentorId },
+    include: {
+      mentor: { select: { id: true, name: true, email: true } },
+      student: { select: { id: true, name: true, email: true } }
+    }
+  });
+}
+
+async function removeMentorAssignment(mentorId, studentId) {
+  const assignment = await prisma.mentorAssignment.findFirst({ where: { mentorId, studentId } });
+  if (!assignment) return null;
+  return prisma.mentorAssignment.delete({ where: { id: assignment.id } });
 }
 
 async function getAnalyticsOverview(filters = {}) {
@@ -224,6 +259,8 @@ module.exports = {
   getStudentProgress,
   listMentors,
   getMentor,
+  assignMentor,
+  removeMentorAssignment,
   getAnalyticsOverview,
   getAtRiskStudents
 };

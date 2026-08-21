@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { adminService } from '../../services/adminService';
-import { Search, UserCheck, UserMinus, UserPlus } from 'lucide-react';
+import { Search, UserMinus, UserPlus } from 'lucide-react';
 
 export default function MentorManagement() {
   const [mentors, setMentors] = useState([]);
@@ -8,10 +8,6 @@ export default function MentorManagement() {
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [actionLoading, setActionLoading] = useState(null);
-
-  useEffect(() => {
-    loadMentors();
-  }, []);
 
   const loadMentors = () => {
     adminService.getMentors()
@@ -24,6 +20,10 @@ export default function MentorManagement() {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    loadMentors();
+  }, []);
 
   const handleUnassign = async (mentorId, studentId) => {
     if (!window.confirm('Are you sure you want to unassign this student?')) return;

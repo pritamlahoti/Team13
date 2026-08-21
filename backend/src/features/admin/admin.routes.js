@@ -28,13 +28,10 @@ router.get('/api/admin/students/:id/progress', adminController.getStudentProgres
 // Phase 7: Mentor Management
 router.get('/api/admin/mentors', adminController.listMentors);
 router.get('/api/admin/mentors/:id', adminController.getMentor);
+router.post('/api/admin/mentor-assignments', adminController.assignMentor);
+router.delete('/api/admin/mentor-assignments/:mentorId/:studentId', adminController.removeMentorAssignment);
 
 /*
-// Schema changes required for these:
-// router.get('/api/admin/mentors/:id/students', adminController.getMentorStudents);
-// router.post('/api/admin/mentor-assignments', adminController.assignMentor);
-// router.delete('/api/admin/mentor-assignments/:mentorId/:studentId', adminController.removeMentorAssignment);
-
 // Phase 8: XP Rules Management
 // router.get('/api/admin/xp-rules', adminController.getXpRules);
 // router.put('/api/admin/xp-rules', adminController.updateXpRules);

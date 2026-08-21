@@ -67,6 +67,8 @@ model User {
   enrollments      Enrollment[]
   submissions      Submission[]
   reviews          Review[]
+  mentorAssignments MentorAssignment[] @relation("MentorAssignments")
+  studentMentorship MentorAssignment?  @relation("StudentMentorship")
   teamMemberships  TeamMember[]
   notifications    Notification[]
 
@@ -110,6 +112,19 @@ model Enrollment {
 
   @@unique([userId, moduleId])
   @@map("enrollments")
+}
+
+model MentorAssignment {
+  id         String   @id @default(uuid())
+  mentorId   String   @map("mentor_id")
+  studentId  String   @unique @map("student_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  mentor  User @relation("MentorAssignments", fields: [mentorId], references: [id], onDelete: Cascade)
+  student User @relation("StudentMentorship", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([mentorId, studentId])
+  @@map("mentor_assignments")
 }
 
 model Submission {

@@ -109,6 +109,29 @@ const getMentor = async (req, res, next) => {
   }
 };
 
+const assignMentor = async (req, res, next) => {
+  try {
+    const { studentId, mentorId } = req.body;
+    if (!studentId || !mentorId) {
+      return res.status(400).json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'studentId and mentorId are required' } });
+    }
+    const assignment = await adminService.assignMentor(studentId, mentorId);
+    res.status(201).json(formatSuccessResponse(assignment, 'Mentor assigned successfully'));
+  } catch (err) {
+    next(err);
+  }
+};
+
+const removeMentorAssignment = async (req, res, next) => {
+  try {
+    const assignment = await adminService.removeMentorAssignment(req.params.mentorId, req.params.studentId);
+    if (!assignment) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Mentor assignment not found' } });
+    res.json(formatSuccessResponse(assignment, 'Mentor assignment removed successfully'));
+  } catch (err) {
+    next(err);
+  }
+};
+
 const getAnalyticsOverview = async (req, res, next) => {
   try {
     const data = await adminService.getAnalyticsOverview(req.query);
@@ -148,6 +171,8 @@ module.exports = {
   getStudentProgress,
   listMentors,
   getMentor,
+  assignMentor,
+  removeMentorAssignment,
   getAnalyticsOverview,
   getAtRiskStudents,
   generateAdminReport

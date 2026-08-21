@@ -119,6 +119,14 @@ function getMentor(id) {
   return adminRepo.getMentor(id);
 }
 
+function assignMentor(studentId, mentorId) {
+  return adminRepo.assignMentor(studentId, mentorId);
+}
+
+function removeMentorAssignment(mentorId, studentId) {
+  return adminRepo.removeMentorAssignment(mentorId, studentId);
+}
+
 function getAnalyticsOverview(filters) {
   return adminRepo.getAnalyticsOverview(filters);
 }
@@ -144,6 +152,8 @@ module.exports = {
   getStudentProgress,
   listMentors,
   getMentor,
+  assignMentor,
+  removeMentorAssignment,
   getAnalyticsOverview,
   getAtRiskStudents,
   generateAdminReport
