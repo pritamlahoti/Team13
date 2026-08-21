@@ -1,74 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Award, Lock, Check } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import { gamificationService } from '../services/gamificationService';
 
 const SPARK_IMAGE = "/manus-storage/katalyst-achievement-spark_a9c0935e.png";
+const TINTS = [
+  'bg-amber-100 text-amber-600 border-amber-200',
+  'bg-cyan-100 text-cyan-600 border-cyan-200',
+  'bg-rose-100 text-rose-600 border-rose-200'
+];
+const LOCKED_TINT = 'bg-slate-100 text-slate-400 border-slate-200';
 
 export default function Achievements() {
+  const { user } = useAuth();
   const [filter, setFilter] = useState('all'); // all | unlocked | locked
+  const [badges, setBadges] = useState([]);
 
-  const badges = [
-    {
-      id: "curious-builder",
-      title: "Curious Builder",
-      description: "Submit 3 objective code assignments verified by AI review.",
-      unlocked: true,
-      progress: "3 / 3",
-      percent: 100,
-      reward: "150 XP",
-      tint: "bg-amber-100 text-amber-600 border-amber-200"
-    },
-    {
-      id: "first-flight",
-      title: "First Flight",
-      description: "Enroll in and finish the AI Fundamentals Bootcamp module.",
-      unlocked: true,
-      progress: "1 / 1",
-      percent: 100,
-      reward: "100 XP",
-      tint: "bg-cyan-100 text-cyan-600 border-cyan-200"
-    },
-    {
-      id: "streak-pioneer",
-      title: "Streak Pioneer",
-      description: "Maintain a daily momentum spark streak of 5 days.",
-      unlocked: true,
-      progress: "5 / 5",
-      percent: 100,
-      reward: "200 XP",
-      tint: "bg-rose-100 text-rose-600 border-rose-200"
-    },
-    {
-      id: "neural-navigator",
-      title: "Neural Navigator",
-      description: "Submit 5 projects in the cohort and complete mentor review.",
-      unlocked: false,
-      progress: "2 / 5",
-      percent: 40,
-      reward: "300 XP",
-      tint: "bg-slate-100 text-slate-400 border-slate-200"
-    },
-    {
-      id: "coach-comrade",
-      title: "Coach Comrade",
-      description: "Interact with Nova AI Coach for 10 distinct topics.",
-      unlocked: false,
-      progress: "6 / 10",
-      percent: 60,
-      reward: "150 XP",
-      tint: "bg-slate-100 text-slate-400 border-slate-200"
-    },
-    {
-      id: "legendary-learner",
-      title: "Legendary Learner",
-      description: "Reach Level 10 and rank #1 in any weekly leaderboard.",
-      unlocked: false,
-      progress: "0 / 1",
-      percent: 0,
-      reward: "500 XP",
-      tint: "bg-slate-100 text-slate-400 border-slate-200"
-    }
-  ];
+  useEffect(() => {
+    if (!user?.id) return;
+    gamificationService.getAchievements(user.id).then((achievements) => {
+      setBadges(achievements.map((a, i) => ({
+        id: a.id,
+        title: a.name,
+        description: a.description,
+        unlocked: a.earned,
+        progress: a.earned ? 'Unlocked' : 'Locked',
+        percent: a.earned ? 100 : 0,
+        reward: '',
+        tint: a.earned ? TINTS[i % TINTS.length] : LOCKED_TINT
+      })));
+    });
+  }, [user]);
 
   const filteredBadges = badges.filter(b => {
     if (filter === 'unlocked') return b.unlocked;
@@ -162,9 +125,11 @@ export default function Achievements() {
                 <h3 className={`font-display font-bold text-sm text-theme-plum ${!badge.unlocked ? 'text-slate-500' : ''}`}>
                   {badge.title}
                 </h3>
-                <span className="px-2 py-0.5 rounded-full bg-theme-plum/5 border border-theme-plum/10 text-theme-plum text-[8px] font-bold shrink-0">
-                  {badge.reward}
-                </span>
+                {badge.reward && (
+                  <span className="px-2 py-0.5 rounded-full bg-theme-plum/5 border border-theme-plum/10 text-theme-plum text-[8px] font-bold shrink-0">
+                    {badge.reward}
+                  </span>
+                )}
               </div>
               <p className="text-[10px] text-slate-500 leading-normal font-sans">
                 {badge.description}

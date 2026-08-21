@@ -27,21 +27,18 @@ router.get(
   }
 );
 
-router.get('/users/:id/xp/ledger', requireAuth, canViewUser, async (req, res, next) => {
-  try {
-    const { total, data, page, limit } = await xpService.getLedger(req.params.id, req.query);
-    res.json(formatPaginatedResponse(data, total, { page, limit }));
-  } catch (err) {
-    next(err);
-  }
-});
 router.get(
   '/users/:id/xp/ledger',
   requireAuth,
   canViewUser,
   validate(ledgerQuerySchema, 'query'),
-  async (req, res) => {
-    res.json(await xpService.getLedger(req.params.id, req.validatedQuery));
+  async (req, res, next) => {
+    try {
+      const { total, data, page, limit } = await xpService.getLedger(req.params.id, req.validatedQuery);
+      res.json(formatPaginatedResponse(data, total, { page, limit }));
+    } catch (err) {
+      next(err);
+    }
   }
 );
 

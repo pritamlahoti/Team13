@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
-import { 
-  Check, 
-  X, 
-  Sparkles, 
-  ClipboardList, 
-  PlusCircle, 
+import {
+  Check,
+  X,
+  Sparkles,
+  ClipboardList,
+  PlusCircle,
   TrendingUp,
   Bot,
   CheckCircle2,
   AlertCircle,
-  Layers
+  Layers,
+  ShieldAlert
 } from 'lucide-react';
 import { learningService } from '../services/learningService';
+import { useAuth } from '../hooks/useAuth';
 
 export default function MentorDashboard() {
+  const { user } = useAuth();
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('QUEUE'); // QUEUE, CREATE, REPORTS
@@ -68,28 +71,27 @@ export default function MentorDashboard() {
     setXpToAward(sub.xpAwarded || 100);
   };
 
-  const handleGenerateAiFeedback = () => {
+  const handleGenerateAiFeedback = async () => {
     setAiDrafting(true);
-    setTimeout(() => {
-      const suggestions = [
-        `AI Coach Nova: Excellent structure in your submission for "${selectedSub.moduleTitle}". Your breakdown shows a strong understanding. Suggestion: Think about how local caching will affect user response latency. Score recommendation: ${selectedSub.moduleId.includes('scope') ? 150 : 100} XP.`,
-        `AI Coach Nova: Outstanding work on "${selectedSub.moduleTitle}". You successfully addressed all prompt constraints. Next step: Try designing an edge-case test suite. Score recommendation: ${selectedSub.moduleId.includes('scope') ? 140 : 95} XP.`
-      ];
-      const randomFeedback = suggestions[Math.floor(Math.random() * suggestions.length)];
-      setFeedback(randomFeedback);
-      setXpToAward(selectedSub.moduleId.includes('scope') ? 150 : 100);
+    try {
+      const draft = await learningService.draftAiFeedback(selectedSub.id);
+      setFeedback(draft);
+    } catch (err) {
+      console.warn('AI feedback draft failed, using fallback suggestion', err);
+      setFeedback(`AI Coach Nova: Review "${selectedSub.moduleTitle}" and confirm the XP award before approving.`);
+    } finally {
       setAiDrafting(false);
-    }, 1200);
+    }
   };
 
-  const handleReviewSubmit = async () => {
+  const handleReviewSubmit = async (outcome = 'approved') => {
     if (!feedback.trim()) {
       showToast({ type: 'error', message: 'Please write review feedback before submitting.' });
       return;
     }
 
     try {
-      await learningService.reviewSubmission(selectedSub.id, feedback, xpToAward);
+      await learningService.reviewSubmission(selectedSub.id, feedback, xpToAward, outcome);
       setSelectedSub(null);
       await refreshSubmissions();
       showToast({ 
@@ -134,6 +136,20 @@ export default function MentorDashboard() {
 
   const pendingSubmissions = submissions.filter(s => s.status === 'pending');
   const reviewedSubmissions = submissions.filter(s => s.status === 'reviewed');
+
+  if (user?.role !== 'KATALYST_MANAGEMENT') {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center space-y-4 py-12">
+        <div className="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 shadow-sm border border-rose-100">
+          <ShieldAlert className="w-8 h-8" />
+        </div>
+        <h2 className="font-display font-bold text-2xl text-theme-plum">Access Restricted</h2>
+        <p className="text-sm text-slate-500 max-w-md font-sans">
+          Only program mentors can review submissions here.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-12 relative">

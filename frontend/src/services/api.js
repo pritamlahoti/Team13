@@ -21,7 +21,9 @@ export const api = {
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      // Backend errors are always { success: false, error: { message } }
+      // (see backend/src/middleware/errorHandler.js).
+      throw new Error(errorData.error?.message || `HTTP error! status: ${response.status}`);
     }
     
     return await response.json();

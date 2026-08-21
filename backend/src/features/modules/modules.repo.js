@@ -1,9 +1,9 @@
 const prisma = require('../../config/prisma');
 const { paginate } = require('../../utils/pagination');
 
-const create = ({ type, classification, scoringMode, dueDate, createdBy }) =>
+const create = ({ title, description, rewardXp, type, classification, scoringMode, dueDate, createdBy }) =>
   prisma.module.create({
-    data: { type, classification, scoringMode, dueDate: dueDate || null, createdBy },
+    data: { title, description, rewardXp, type, classification, scoringMode, dueDate: dueDate || null, createdBy },
   });
 
 const findById = (id) => prisma.module.findUnique({ where: { id } });

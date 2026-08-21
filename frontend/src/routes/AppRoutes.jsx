@@ -22,6 +22,7 @@ import Achievements from '../pages/Achievements';
 import Profile from '../pages/Profile';
 import Settings from '../pages/Settings';
 import Admin from '../pages/Admin';
+import MentorDashboard from '../pages/MentorDashboard';
 import NotFound from '../pages/NotFound';
 
 function ScrollToTop() {
@@ -58,6 +59,7 @@ export default function AppRoutes() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/mentor-dashboard" element={<MentorDashboard />} />
         </Route>
         
         {/* Catch-all */}

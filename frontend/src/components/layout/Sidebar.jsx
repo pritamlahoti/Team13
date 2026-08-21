@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Compass, 
-  Rocket, 
-  Trophy, 
-  Award, 
-  LogOut, 
-  Flame, 
+import {
+  LayoutDashboard,
+  Compass,
+  Rocket,
+  Trophy,
+  Award,
+  LogOut,
+  Flame,
   Sparkles,
   User,
   MessageSquare,
-  ShieldCheck
+  ShieldCheck,
+  ClipboardList
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { gamificationService } from '../../services/gamificationService';
@@ -53,6 +54,7 @@ export default function Sidebar({ onOpenCoach }) {
     );
   } else if (user?.role === 'KATALYST_MANAGEMENT') {
     menuItems.push(
+      { to: '/mentor-dashboard', label: 'Mentor Console', icon: ClipboardList },
       { to: '/leaderboard', label: 'Leaderboard', icon: Trophy }
     );
   } else if (user?.role === 'HIGHER_MANAGEMENT') {

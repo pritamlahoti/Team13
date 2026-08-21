@@ -13,10 +13,16 @@ export const authService = {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Invalid credentials');
+        throw new Error(errorData.error?.message || 'Invalid credentials');
       }
 
-      return await response.json();
+      const data = await response.json();
+      // Backend roles are lowercase (e.g. "katalyst_management"); the rest of
+      // the frontend (Sidebar, Admin, MentorDashboard role guards) compares
+      // against the uppercase ROLES-style strings used by the mock fallback
+      // below, so normalize here at the single point real auth data enters.
+      data.user.role = data.user.role.toUpperCase();
+      return data;
     } catch (err) {
       console.warn('Backend connection failed, using mock auth fallback', err);
       // Fallback credentials for testing/demoing
@@ -45,12 +51,19 @@ export const authService = {
   getUsers: async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/users`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) return await response.json();
+      const headers = { 'Authorization': `Bearer ${token}` };
+      const [studentsRes, mentorsRes] = await Promise.all([
+        fetch(`${API_URL}/api/admin/students?limit=100`, { headers }),
+        fetch(`${API_URL}/api/admin/mentors?limit=100`, { headers })
+      ]);
+      if (studentsRes.ok && mentorsRes.ok) {
+        const { data: students } = await studentsRes.json();
+        const { data: mentors } = await mentorsRes.json();
+        return [
+          ...students.map(s => ({ ...s, role: 'STUDENT', mentor: null })),
+          ...mentors.map(m => ({ ...m, role: 'KATALYST_MANAGEMENT' }))
+        ];
+      }
     } catch (err) {
       console.warn('Backend fetch failed, returning mock users database', err);
     }
@@ -75,22 +88,10 @@ export const authService = {
     return initialUsers;
   },
   
+  // The User model has no mentor relation and PUT /users/:id/mentor doesn't
+  // exist server-side yet (backend admin.routes.js flags this as needing a
+  // schema change) — this always runs the local simulation below.
   assignMentor: async (studentId, mentorId) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/users/${studentId}/mentor`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ mentorId })
-      });
-      if (response.ok) return await response.json();
-    } catch (err) {
-      console.warn('Backend update failed, updating local simulation database', err);
-    }
-
     // Update frontend simulation
     const stored = localStorage.getItem('mock_users_db');
     if (stored) {

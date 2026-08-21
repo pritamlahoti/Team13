@@ -1,8 +1,9 @@
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export default function PublicRoute({ children }) {
-  const { loading } = useAuth();
-  
+  const { isAuthenticated, loading } = useAuth();
+
   if (loading) {
     return (
       <div className="min-h-screen bg-theme-cream flex items-center justify-center">
@@ -10,6 +11,10 @@ export default function PublicRoute({ children }) {
       </div>
     );
   }
-  
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return children;
 }

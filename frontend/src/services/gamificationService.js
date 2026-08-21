@@ -57,11 +57,40 @@ export const gamificationService = {
     }
   },
   
-  getLeaderboard: async () => {
+  getLeaderboard: async (scope = 'individual', limit = 20) => {
     try {
-      // Stub leaderboard backend if there was one
-    } catch {
-      console.warn('Backend connection failed, compiling live local leaderboard');
+      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const { entries } = await api.request(`/leaderboard?scope=${scope}&limit=${limit}`);
+      const colors = ['bg-amber-400 text-amber-950', 'bg-slate-300 text-slate-900', 'bg-amber-600 text-amber-100'];
+      if (scope === 'team') {
+        return entries.map((e) => ({
+          position: e.rank,
+          name: e.name || 'Unnamed Team',
+          xp: e.totalXp,
+          avatar: (e.name || 'T').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2),
+          tint: colors[(e.rank - 1) % colors.length]
+        }));
+      }
+      return entries.map((e) => ({
+        position: e.rank,
+        name: e.name,
+        xp: e.totalXp,
+        level: Math.floor(e.totalXp / 500) + 1,
+        initials: e.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2),
+        streak: 0,
+        mine: e.userId === currentUser.id,
+        color: colors[(e.rank - 1) % colors.length]
+      }));
+    } catch (err) {
+      console.warn('Backend connection failed, compiling live local leaderboard', err);
+    }
+
+    if (scope === 'team') {
+      return [
+        { position: 1, name: "Alpha Agents", xp: 14500, avatar: "AA", tint: "bg-theme-berry/10 text-theme-berry" },
+        { position: 2, name: "Neural Knights", xp: 13200, avatar: "NK", tint: "bg-theme-peach/10 text-theme-berry" },
+        { position: 3, name: "Prompt Pioneers", xp: 11400, avatar: "PP", tint: "bg-theme-cream/30 text-theme-plum" }
+      ];
     }
 
     const ledger = JSON.parse(localStorage.getItem('mock_xp_ledger_db') || '[]');
@@ -100,6 +129,16 @@ export const gamificationService = {
       hue: s.hue,
       mine: s.id === currentUser.id
     }));
+  },
+
+  getAchievements: async (userId) => {
+    try {
+      const { achievements } = await api.request(`/users/${userId}/achievements`);
+      return achievements;
+    } catch (err) {
+      console.warn('Backend connection failed, using empty achievements list', err);
+      return [];
+    }
   },
 
   getAIProgressUpdate: async (userId) => {

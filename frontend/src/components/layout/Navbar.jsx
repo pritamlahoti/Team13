@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { GraduationCap, Users } from 'lucide-react';
+import { GraduationCap, Users, LayoutDashboard } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function Navbar({ activeSection }) {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const { isAuthenticated } = useAuth();
 
   const handleLinkClick = (id) => {
     if (isHomePage) {
@@ -93,19 +95,31 @@ export default function Navbar({ activeSection }) {
             </Link>
           )}
           
-          <Link
-            to="/login"
-            className="px-4 py-2 text-slate-600 hover:text-theme-berry text-xs font-bold transition-all duration-300 cursor-pointer"
-          >
-            Log In
-          </Link>
+          {isAuthenticated ? (
+            <Link
+              to="/dashboard"
+              className="px-5 py-2 bg-gradient-to-r from-theme-berry to-theme-peach text-white text-xs font-bold rounded-xl shadow-md hover:shadow-berry/20 hover:scale-[1.03] transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              <span>Dashboard</span>
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="px-4 py-2 text-slate-600 hover:text-theme-berry text-xs font-bold transition-all duration-300 cursor-pointer"
+              >
+                Log In
+              </Link>
 
-          <Link
-            to="/register"
-            className="px-5 py-2 bg-gradient-to-r from-theme-berry to-theme-peach text-white text-xs font-bold rounded-xl shadow-md hover:shadow-berry/20 hover:scale-[1.03] transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
-          >
-            Sign Up
-          </Link>
+              <Link
+                to="/register"
+                className="px-5 py-2 bg-gradient-to-r from-theme-berry to-theme-peach text-white text-xs font-bold rounded-xl shadow-md hover:shadow-berry/20 hover:scale-[1.03] transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
       </nav>
     </header>

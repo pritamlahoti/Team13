@@ -264,19 +264,15 @@ export const learningService = {
     return JSON.parse(localStorage.getItem('mock_submissions_db') || '[]');
   },
 
-  reviewSubmission: async (submissionId, feedbackText, xpAwarded) => {
+  // POST /submissions/:id/score is the real scoring path (records the review
+  // and awards XP). /submissions/:id/ai-review is a different endpoint that
+  // only drafts AI feedback text without scoring anything.
+  reviewSubmission: async (submissionId, feedbackText, xpAwarded, outcome = 'approved') => {
     try {
-      // Stub backend review
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:4000'}/submissions/${submissionId}/ai-review`, {
+      return await api.request(`/submissions/${submissionId}/score`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ feedbackText, xpAwarded })
+        body: JSON.stringify({ outcome, feedbackText, xpAwarded })
       });
-      if (response.ok) return await response.json();
     } catch (err) {
       console.warn('Backend connection failed, performing simulated submission review', err);
     }
@@ -315,6 +311,13 @@ export const learningService = {
     localStorage.setItem('mock_quests_db', JSON.stringify(updatedQuests));
 
     return { success: true, submission };
+  },
+
+  draftAiFeedback: async (submissionId) => {
+    const { draftFeedback } = await api.request(`/submissions/${submissionId}/ai-review`, {
+      method: 'POST'
+    });
+    return draftFeedback;
   },
 
   getJourneyNodes: async () => {

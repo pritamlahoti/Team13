@@ -1,30 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Search, Users, Flame } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
+import { gamificationService } from '../services/gamificationService';
 
 export default function Leaderboard() {
-  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('individual'); // individual | teams
   const [searchQuery, setSearchQuery] = useState('');
+  const [individualLearners, setIndividualLearners] = useState([]);
+  const [teamStandings, setTeamStandings] = useState([]);
 
-  const individualLearners = [
-    { position: 1, name: "Ananya Rao", level: 10, xp: 4890, initials: "AR", streak: 12, color: "bg-amber-400 text-amber-950" },
-    { position: 2, name: "Kabir Shah", level: 9, xp: 4210, initials: "KS", streak: 8, color: "bg-slate-300 text-slate-900" },
-    { position: 3, name: user?.name || "Shriya Mehta", level: 8, xp: 3820, initials: "SM", streak: 5, color: "bg-amber-600 text-amber-100", mine: true },
-    { position: 4, name: "Vihaan Gupta", level: 7, xp: 3380, initials: "VG", streak: 15 },
-    { position: 5, name: "Diya Sharma", level: 7, xp: 3100, initials: "DS", streak: 4 },
-    { position: 6, name: "Aarav Patel", level: 6, xp: 2850, initials: "AP", streak: 2 },
-    { position: 7, name: "Isha Malhotra", level: 6, xp: 2600, initials: "IM", streak: 0 }
-  ];
+  useEffect(() => {
+    gamificationService.getLeaderboard('individual', 20).then(setIndividualLearners);
+    gamificationService.getLeaderboard('team', 20).then(setTeamStandings);
+  }, []);
 
-  const teamStandings = [
-    { position: 1, name: "Alpha Agents", members: 4, xp: 14500, avatar: "AA", tint: "bg-theme-berry/10 text-theme-berry" },
-    { position: 2, name: "Neural Knights", members: 5, xp: 13200, avatar: "NK", tint: "bg-theme-peach/10 text-theme-berry" },
-    { position: 3, name: "Prompt Pioneers", members: 4, xp: 11400, avatar: "PP", tint: "bg-theme-cream/30 text-theme-plum" }
-  ];
-
-  const filteredLearners = individualLearners.filter(l => 
+  const filteredLearners = individualLearners.filter(l =>
     l.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -192,10 +182,12 @@ export default function Leaderboard() {
 
               <div className="space-y-1.5 py-4">
                 <h3 className="font-display font-bold text-sm text-theme-plum">{team.name}</h3>
-                <p className="text-[10px] text-slate-500 font-sans flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5 text-theme-berry" />
-                  <span>{team.members} Active Members</span>
-                </p>
+                {team.members != null && (
+                  <p className="text-[10px] text-slate-500 font-sans flex items-center gap-1">
+                    <Users className="w-3.5 h-3.5 text-theme-berry" />
+                    <span>{team.members} Active Members</span>
+                  </p>
+                )}
               </div>
 
               <div className="flex justify-between items-end border-t border-theme-plum/5 pt-3">
