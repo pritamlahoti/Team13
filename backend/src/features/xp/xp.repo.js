@@ -1,6 +1,7 @@
 
 //sakshi Nagarew
 const prisma = require('../../config/prisma');
+const { paginate } = require('../../utils/pagination');
 
 async function sumForUserYear(userId, year) {
   const { _sum } = await prisma.xpLedger.aggregate({
@@ -16,6 +17,18 @@ async function sumForUserYear(userId, year) {
   return _sum.xpAwarded || 0;
 }
 
+const listForUser = (userId, { page, limit }) =>
+  prisma
+    .$transaction([
+      prisma.xpLedger.findMany({
+        where: { submission: { userId } },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.xpLedger.count({ where: { submission: { userId } } }),
+    ])
+    .then((result) => paginate({ page, limit }, result));
 async function listForUser(userId, where = {}, orderBy = { createdAt: 'desc' }, skip = 0, take = 20) {
   const finalWhere = { ...where, submission: { userId } };
   

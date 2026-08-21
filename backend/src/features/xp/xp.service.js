@@ -48,6 +48,7 @@ const awardSubmissionXp = async (submissionId, moduleType, score, submittedAt, d
 const getYearlyXp = (userId, year = new Date().getFullYear()) =>
   xpRepo.sumForUserYear(userId, year).then((totalXp) => ({ userId, year, totalXp }));
 
+const getLedger = (userId, pagination) => xpRepo.listForUser(userId, pagination);
 const getLedger = (userId, query = {}) => {
   const { skip, take, page, limit } = parsePagination(query);
   const orderBy = parseSort(query, ['createdAt', 'xpAwarded'], 'createdAt', 'desc');

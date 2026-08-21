@@ -2,7 +2,15 @@ const reviewsRepo = require('./reviews.repo');
 
 // Management's manual scoring path (backend PRD section 4.2, step 4) —
 // the AI Coach's autonomous path calls reviewsRepo directly from aiCoach.service.
-const scoreSubmission = ({ submissionId, managementUserId, outcome, feedbackText, xpAwarded }) =>
+const scoreSubmission = ({
+  submissionId,
+  managementUserId,
+  outcome,
+  feedbackText,
+  xpAwarded,
+  individualComponent,
+  teamComponent,
+}) =>
   reviewsRepo.recordReviewAndXp({
     submissionId,
     reviewerType: 'management',
@@ -10,6 +18,8 @@ const scoreSubmission = ({ submissionId, managementUserId, outcome, feedbackText
     outcome,
     feedbackText,
     xpAwarded,
+    individualComponent,
+    teamComponent,
   });
 
 module.exports = { scoreSubmission };
