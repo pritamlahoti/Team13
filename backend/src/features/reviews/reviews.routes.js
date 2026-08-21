@@ -13,13 +13,15 @@ router.post(
   requireRole(ROLES.KATALYST_MANAGEMENT),
   validate(scoreSubmissionSchema),
   async (req, res) => {
-    const { outcome, feedbackText, xpAwarded } = req.body;
+    const { outcome, feedbackText, xpAwarded, individualComponent, teamComponent } = req.body;
     const result = await reviewsService.scoreSubmission({
       submissionId: req.params.id,
       managementUserId: req.user.id,
       outcome,
       feedbackText,
       xpAwarded,
+      individualComponent,
+      teamComponent,
     });
     res.status(201).json(result);
   }

@@ -12,13 +12,14 @@ const aiCoachRoutes = require('./features/aiCoach/aiCoach.routes');
 const xpRoutes = require('./features/xp/xp.routes');
 const reportsRoutes = require('./features/reports/reports.routes');
 const adminRoutes = require('./features/admin/admin.routes');
+const teamsRoutes = require('./features/teams/teams.routes');
+const dashboardRoutes = require('./features/dashboard/dashboard.routes');
 
 const app = express();
 
-app.use(cors());
-// Default 1kb threshold skips small responses (auth/me, single-record GETs)
-// where compression CPU cost would outweigh the bandwidth saved; it only
-// kicks in for the endpoints that can return real volume (reports, listings).
+
+app.use(cors({ origin: process.env.FRONTEND_URL }));
+
 app.use(compression());
 app.use(express.json());
 
@@ -33,6 +34,8 @@ app.use(aiCoachRoutes);
 app.use(xpRoutes);
 app.use(reportsRoutes);
 app.use(adminRoutes);
+app.use(teamsRoutes);
+app.use(dashboardRoutes);
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 app.use(errorHandler);
