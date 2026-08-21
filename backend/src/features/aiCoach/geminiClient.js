@@ -1,5 +1,6 @@
 // Single choke point for all Gemini calls (backend PRD section 4.4) — retry/
 // timeout/error-handling lives here once instead of duplicated per route.
+
 const MODEL = 'gemini-3.6-flash';
 const TIMEOUT_MS = 25000;
 
