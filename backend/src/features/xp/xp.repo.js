@@ -1,8 +1,8 @@
+
+//sakshi Nagarew
 const prisma = require('../../config/prisma');
 const { paginate } = require('../../utils/pagination');
 
-// xp_ledger is append-only (PRD section 9); "yearly" XP is summed from
-// created_at since submissions/modules carry no explicit programme year yet.
 async function sumForUserYear(userId, year) {
   const { _sum } = await prisma.xpLedger.aggregate({
     _sum: { xpAwarded: true },
@@ -29,5 +29,29 @@ const listForUser = (userId, { page, limit }) =>
       prisma.xpLedger.count({ where: { submission: { userId } } }),
     ])
     .then((result) => paginate({ page, limit }, result));
+async function listForUser(userId, where = {}, orderBy = { createdAt: 'desc' }, skip = 0, take = 20) {
+  const finalWhere = { ...where, submission: { userId } };
+  
+  const [total, data] = await prisma.$transaction([
+    prisma.xpLedger.count({ where: finalWhere }),
+    prisma.xpLedger.findMany({
+      where: finalWhere,
+      orderBy,
+      skip,
+      take
+    })
+  ]);
+  
+  return { total, data };
+}
 
-module.exports = { sumForUserYear, listForUser };
+const recordXp = (data) => 
+  prisma.xpLedger.create({
+    data: {
+      submissionId: data.submissionId,
+      scoredBy: data.scoredBy,
+      xpAwarded: data.xpAwarded
+    }
+  });
+
+module.exports = { sumForUserYear, listForUser, recordXp };

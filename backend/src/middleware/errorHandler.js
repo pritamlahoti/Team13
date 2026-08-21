@@ -10,6 +10,11 @@ const PRISMA_ERROR_MAP = {
 };
 
 function resolveError(err) {
+  // Handle invalid JSON body payloads gracefully
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    return { status: 400, message: 'Invalid JSON payload sent in the request body.' };
+  }
+
   if (err instanceof Prisma.PrismaClientKnownRequestError && PRISMA_ERROR_MAP[err.code]) {
     return PRISMA_ERROR_MAP[err.code];
   }
@@ -22,9 +27,13 @@ function resolveError(err) {
 
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
-  console.error(err);
+  // Only log if it's an unexpected internal error (not a simple bad JSON payload)
+  if (!(err instanceof SyntaxError && err.status === 400 && 'body' in err)) {
+    console.error(err);
+  }
+  
   const { status, message } = resolveError(err);
-  res.status(status).json({ error: message });
+  res.status(status).json({ success: false, error: { message } });
 }
 
 module.exports = errorHandler;
