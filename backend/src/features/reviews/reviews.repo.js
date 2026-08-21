@@ -12,25 +12,28 @@ async function recordReviewAndXp({
   individualComponent,
   teamComponent,
 }) {
-  return prisma.$transaction(async (tx) => {
-    const review = await tx.review.create({
-      data: { submissionId, reviewerType, reviewerId: reviewerId || null, outcome, feedbackText },
-    });
+  return prisma.$transaction(
+    async (tx) => {
+      const review = await tx.review.create({
+        data: { submissionId, reviewerType, reviewerId: reviewerId || null, outcome, feedbackText },
+      });
 
-    const xp = await tx.xpLedger.create({
-      data: {
-        submissionId,
-        scoredBy: reviewerType,
-        xpAwarded,
-        individualComponent: individualComponent || null,
-        teamComponent: teamComponent || null,
-      },
-    });
+      const xp = await tx.xpLedger.create({
+        data: {
+          submissionId,
+          scoredBy: reviewerType,
+          xpAwarded,
+          individualComponent: individualComponent || null,
+          teamComponent: teamComponent || null,
+        },
+      });
 
-    await tx.submission.update({ where: { id: submissionId }, data: { status: 'scored' } });
+      await tx.submission.update({ where: { id: submissionId }, data: { status: 'scored' } });
 
-    return { review, xp };
-  });
+      return { review, xp };
+    },
+    { maxWait: 10000, timeout: 20000 }
+  );
 }
 
 module.exports = { recordReviewAndXp };

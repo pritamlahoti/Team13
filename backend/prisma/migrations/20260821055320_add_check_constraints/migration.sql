@@ -1,3 +1,4 @@
+
 -- Constraints not expressible in prisma/schema.prisma (Prisma has no CHECK
 -- constraint modeling), added by hand so they're still enforced for any
 -- write path that doesn't go through the app's Zod validation layer.
@@ -10,3 +11,4 @@ ALTER TABLE "modules" ADD CONSTRAINT "modules_mandatory_due_date_check"
 -- append-only ledger even if written outside the API (e.g. AI Coach path).
 ALTER TABLE "xp_ledger" ADD CONSTRAINT "xp_ledger_xp_awarded_range_check"
   CHECK (xp_awarded >= 1 AND xp_awarded <= 1000);
+

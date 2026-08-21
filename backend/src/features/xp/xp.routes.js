@@ -1,4 +1,3 @@
-//Sakshi Nagare
 const { Router } = require('express');
 const xpService = require('./xp.service');
 const { yearQuerySchema, ledgerQuerySchema } = require('./xp.schema');
@@ -6,7 +5,6 @@ const { requireAuth } = require('../../middleware/auth');
 const requireSelfOrRole = require('../../middleware/requireSelfOrRole');
 const validate = require('../../middleware/validate');
 const { ROLES } = require('../../constants/roles');
-const { formatPaginatedResponse, formatSuccessResponse } = require('../admin/admin.utils');
 
 const router = Router();
 
@@ -20,29 +18,27 @@ router.get(
   async (req, res, next) => {
     try {
       const data = await xpService.getYearlyXp(req.params.id, req.validatedQuery.year);
-      res.json(formatSuccessResponse(data));
+      res.json(data);
     } catch (err) {
       next(err);
     }
   }
 );
 
-router.get('/users/:id/xp/ledger', requireAuth, canViewUser, async (req, res, next) => {
-  try {
-    const { total, data, page, limit } = await xpService.getLedger(req.params.id, req.query);
-    res.json(formatPaginatedResponse(data, total, { page, limit }));
-  } catch (err) {
-    next(err);
-  }
-});
 router.get(
   '/users/:id/xp/ledger',
   requireAuth,
   canViewUser,
   validate(ledgerQuerySchema, 'query'),
-  async (req, res) => {
-    res.json(await xpService.getLedger(req.params.id, req.validatedQuery));
+  async (req, res, next) => {
+    try {
+      const data = await xpService.getLedger(req.params.id, req.validatedQuery);
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
   }
 );
 
 module.exports = router;
+
