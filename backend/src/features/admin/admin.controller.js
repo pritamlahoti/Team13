@@ -1,3 +1,5 @@
+//Sakshi Nagare
+
 const adminService = require('./admin.service');
 const { formatPaginatedResponse, formatSuccessResponse } = require('./admin.utils');
 
@@ -88,6 +90,25 @@ const getStudentProgress = async (req, res, next) => {
   }
 };
 
+const listMentors = async (req, res, next) => {
+  try {
+    const { total, data, page, limit } = await adminService.listMentors(req.query);
+    res.json(formatPaginatedResponse(data, total, { page, limit }));
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getMentor = async (req, res, next) => {
+  try {
+    const mentor = await adminService.getMentor(req.params.id);
+    if (!mentor) return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Mentor not found' } });
+    res.json(formatSuccessResponse(mentor));
+  } catch (err) {
+    next(err);
+  }
+};
+
 const getAnalyticsOverview = async (req, res, next) => {
   try {
     const data = await adminService.getAnalyticsOverview(req.query);
@@ -125,6 +146,8 @@ module.exports = {
   listStudents,
   getStudent,
   getStudentProgress,
+  listMentors,
+  getMentor,
   getAnalyticsOverview,
   getAtRiskStudents,
   generateAdminReport

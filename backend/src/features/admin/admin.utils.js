@@ -2,6 +2,8 @@
  * Parses query parameters into Prisma-compatible pagination options.
  * Defaults to page 1 and limit 20, with a max limit of 100.
  */
+
+//Sakshi Nagare
 function parsePagination(query) {
   const page = Math.max(parseInt(query.page) || 1, 1);
   let limit = parseInt(query.limit) || 20;
