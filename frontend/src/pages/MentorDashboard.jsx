@@ -12,6 +12,8 @@ import {
   Layers
 } from 'lucide-react';
 import { learningService } from '../services/learningService';
+import { api } from '../services/api';
+import ProfileCard from '../components/profile/ProfileCard';
 
 export default function MentorDashboard() {
   const [submissions, setSubmissions] = useState([]);
@@ -22,6 +24,8 @@ export default function MentorDashboard() {
   const [xpToAward, setXpToAward] = useState(100);
   const [aiDrafting, setAiDrafting] = useState(false);
   const [toast, setToast] = useState(null);
+  // eslint-disable-next-line no-unused-vars
+  const [_mgmtStats, setMgmtStats] = useState(null); // reserved for future reports panel
 
   // Activity Creator State
   const [newQuest, setNewQuest] = useState({
@@ -44,22 +48,27 @@ export default function MentorDashboard() {
 
   useEffect(() => {
     let active = true;
-    learningService.getSubmissions()
-      .then(data => {
+
+    async function init() {
+      try {
+        // Load submissions queue and management dashboard stats in parallel
+        const [data, stats] = await Promise.allSettled([
+          learningService.getSubmissions(),
+          api.request('/dashboard/management').catch(() => null),
+        ]);
         if (active) {
-          setSubmissions(data);
+          if (data.status === 'fulfilled') setSubmissions(data.value);
+          if (stats.status === 'fulfilled' && stats.value) setMgmtStats(stats.value);
           setLoading(false);
         }
-      })
-      .catch(err => {
-        console.error('Failed to load submissions', err);
-        if (active) {
-          setLoading(false);
-        }
-      });
-    return () => {
-      active = false;
-    };
+      } catch (err) {
+        console.error('MentorDashboard init failed', err);
+        if (active) setLoading(false);
+      }
+    }
+
+    init();
+    return () => { active = false; };
   }, []);
 
   const handleSelectSub = (sub) => {
@@ -68,18 +77,29 @@ export default function MentorDashboard() {
     setXpToAward(sub.xpAwarded || 100);
   };
 
-  const handleGenerateAiFeedback = () => {
+  const handleGenerateAiFeedback = async () => {
+    if (!selectedSub) return;
     setAiDrafting(true);
-    setTimeout(() => {
-      const suggestions = [
-        `AI Coach Nova: Excellent structure in your submission for "${selectedSub.moduleTitle}". Your breakdown shows a strong understanding. Suggestion: Think about how local caching will affect user response latency. Score recommendation: ${selectedSub.moduleId.includes('scope') ? 150 : 100} XP.`,
-        `AI Coach Nova: Outstanding work on "${selectedSub.moduleTitle}". You successfully addressed all prompt constraints. Next step: Try designing an edge-case test suite. Score recommendation: ${selectedSub.moduleId.includes('scope') ? 140 : 95} XP.`
-      ];
-      const randomFeedback = suggestions[Math.floor(Math.random() * suggestions.length)];
-      setFeedback(randomFeedback);
-      setXpToAward(selectedSub.moduleId.includes('scope') ? 150 : 100);
-      setAiDrafting(false);
-    }, 1200);
+    try {
+      // Try real backend AI draft first
+      const draft = await learningService.getAiDraftFeedback(selectedSub.id);
+      if (draft) {
+        setFeedback(draft);
+        setAiDrafting(false);
+        return;
+      }
+    } catch {
+      // fall through to mock
+    }
+
+    // Mock fallback when backend is offline
+    const suggestions = [
+      `AI Coach Nova: Excellent structure in your submission for "${selectedSub.moduleTitle}". Your breakdown shows a strong understanding. Suggestion: Think about how local caching will affect user response latency. Score recommendation: ${selectedSub.moduleId?.includes('scope') ? 150 : 100} XP.`,
+      `AI Coach Nova: Outstanding work on "${selectedSub.moduleTitle}". You successfully addressed all prompt constraints. Next step: Try designing an edge-case test suite. Score recommendation: ${selectedSub.moduleId?.includes('scope') ? 140 : 95} XP.`,
+    ];
+    setFeedback(suggestions[Math.floor(Math.random() * suggestions.length)]);
+    setXpToAward(selectedSub.moduleId?.includes('scope') ? 150 : 100);
+    setAiDrafting(false);
   };
 
   const handleReviewSubmit = async () => {
@@ -173,7 +193,9 @@ export default function MentorDashboard() {
           </p>
         </div>
 
-        {/* Tab Buttons */}
+        <div className="flex flex-col items-end gap-3">
+          {/* Profile Card (compact) */}
+          <ProfileCard compact className="w-64" />
         <div className="flex items-center gap-1 bg-theme-plum/5 p-1 rounded-xl shrink-0 self-start md:self-center">
           <button
             onClick={() => setActiveTab('QUEUE')}
@@ -208,6 +230,7 @@ export default function MentorDashboard() {
             <TrendingUp className="w-4 h-4" />
             Cohort Reports
           </button>
+        </div>
         </div>
       </div>
 

@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-import React from 'react';
->>>>>>> 635c609 (starting for admin frontend)
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 

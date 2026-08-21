@@ -1,8 +1,4 @@
 import { useState, useEffect } from 'react';
-<<<<<<< HEAD
-=======
-import React, { useState, useEffect } from 'react';
->>>>>>> 635c609 (starting for admin frontend)
 import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -17,15 +13,6 @@ import {
   X, 
   Bot, 
   Compass, 
-<<<<<<< HEAD
-=======
-  ChevronRight, 
-  X, 
-  Bot, 
-  Compass, 
-  Play, 
-  Award,
->>>>>>> 635c609 (starting for admin frontend)
   Calendar
 } from 'lucide-react';
 import { learningService } from '../services/learningService';

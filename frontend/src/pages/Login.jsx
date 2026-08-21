@@ -1,8 +1,4 @@
 import { useState, useEffect } from 'react';
-<<<<<<< HEAD
-=======
-import React, { useState } from 'react';
->>>>>>> 635c609 (starting for admin frontend)
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, Sparkles } from 'lucide-react';
@@ -20,10 +16,6 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 635c609 (starting for admin frontend)
   useEffect(() => {
     // Disable body scrolling when on the login page
     document.body.style.overflow = 'hidden';
