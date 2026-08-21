@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 const errorHandler = require('./middleware/errorHandler');
 
 const authRoutes = require('./features/auth/auth.routes');
@@ -14,6 +15,10 @@ const reportsRoutes = require('./features/reports/reports.routes');
 const app = express();
 
 app.use(cors());
+// Default 1kb threshold skips small responses (auth/me, single-record GETs)
+// where compression CPU cost would outweigh the bandwidth saved; it only
+// kicks in for the endpoints that can return real volume (reports, listings).
+app.use(compression());
 app.use(express.json());
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));

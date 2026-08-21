@@ -23,7 +23,7 @@ function sanitizeForPrompt(text) {
 // Autonomous path for objective modules (backend PRD section 4.2/4.3):
 // Gemini writes the feedback, a fixed rule computes XP — never the reverse.
 async function reviewObjectiveSubmission(submission, module) {
-  const prompt = `You are an encouraging learning coach. Write brief (2-3 sentence) feedback for a student's submission to a "${module.type}" activity. Submission notes: ${sanitizeForPrompt(submission.content_ref)}`;
+  const prompt = `You are an encouraging learning coach. Write brief (2-3 sentence) feedback for a student's submission to a "${module.type}" activity. Submission notes: ${sanitizeForPrompt(submission.contentRef)}`;
 
   let feedbackText;
   try {
@@ -46,7 +46,7 @@ async function reviewObjectiveSubmission(submission, module) {
 async function draftFeedback(submission) {
   try {
     return await gemini.generateText(
-      `Summarize this student submission for a human reviewer in 2-3 sentences: ${sanitizeForPrompt(submission.content_ref)}`
+      `Summarize this student submission for a human reviewer in 2-3 sentences: ${sanitizeForPrompt(submission.contentRef)}`
     );
   } catch {
     return null;
