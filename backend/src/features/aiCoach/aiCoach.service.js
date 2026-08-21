@@ -79,14 +79,24 @@ async function draftFeedback(submission) {
   }
 }
 
-const generateNudge = (user) =>
-  gemini.generateText(
-    `Write a short, friendly re-engagement message for ${user.name}, who has shown reduced activity in the Katalyst programme.`
-  );
+async function generateNudge(user) {
+  try {
+    return await gemini.generateText(
+      `Write a short, friendly re-engagement message for ${user.name}, who has shown reduced activity in the Katalyst programme.`
+    );
+  } catch {
+    return `Hi ${user.name}, we missed you at recent Katalyst sessions! Check your dashboard for upcoming learning modules and challenges.`;
+  }
+}
 
-const generateProgressUpdate = (user, stats) =>
-  gemini.generateText(
-    `Write a short natural-language progress summary for ${user.name}. Stats: ${JSON.stringify(stats)}.`
-  );
+async function generateProgressUpdate(user, stats) {
+  try {
+    return await gemini.generateText(
+      `Write a short natural-language progress summary for ${user.name}. Stats: ${JSON.stringify(stats)}.`
+    );
+  } catch {
+    return `Great effort, ${user.name}! You have earned a total of ${stats.totalXp || 0} XP in ${stats.year || new Date().getFullYear()}. Keep participating in upcoming modules to boost your standing!`;
+  }
+}
 
 module.exports = { reviewObjectiveSubmission, draftFeedback, generateNudge, generateProgressUpdate };
