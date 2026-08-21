@@ -11,6 +11,7 @@ enum Role {
   student
   katalyst_management
   higher_management
+  mentor
 }
 
 enum ModuleType {
@@ -69,6 +70,8 @@ model User {
   reviews          Review[]
   teamMemberships  TeamMember[]
   notifications    Notification[]
+  mentorAssignments MentorAssignment[] @relation("MentorAssignments")
+  studentAssignments MentorAssignment[] @relation("StudentAssignments")
 
   @@map("users")
 }
@@ -181,4 +184,18 @@ model Notification {
   targetUser User? @relation(fields: [targetUserId], references: [id])
 
   @@map("notifications")
+}
+
+model MentorAssignment {
+  id         String   @id @default(uuid())
+  mentorId   String   @map("mentor_id")
+  studentId  String   @map("student_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+  active     Boolean  @default(true)
+
+  mentor  User @relation("MentorAssignments", fields: [mentorId], references: [id])
+  student User @relation("StudentAssignments", fields: [studentId], references: [id])
+
+  @@unique([mentorId, studentId])
+  @@map("mentor_assignments")
 }
