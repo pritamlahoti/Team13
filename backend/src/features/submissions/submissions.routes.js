@@ -57,9 +57,16 @@ router.get(
   }
 );
 
+// Owning student or katalyst_management may view a submission — same
+// ownership-check shape as PATCH /submissions/:id/team above.
 router.get('/submissions/:id', requireAuth, async (req, res) => {
   const submission = await submissionsService.getSubmission(req.params.id);
-  if (!submission) throw httpError(404, 'Submission not found');
+  if (
+    !submission ||
+    (submission.userId !== req.user.id && req.user.role !== ROLES.KATALYST_MANAGEMENT)
+  ) {
+    throw httpError(404, 'Submission not found');
+  }
   res.json(submission);
 });
 
