@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -28,9 +28,9 @@ const HERO_IMAGE = "/manus-storage/katalyst-hero-campus_fa6d5ff3.jpg";
 const COACH_IMAGE = "/manus-storage/katalyst-coach-orbit_efa784b0.png";
 const SPARK_IMAGE = "/manus-storage/katalyst-achievement-spark_a9c0935e.png";
 
-export default function Dashboard() {
+export default function StudentDashboard() {
   const { user } = useAuth();
-  const { onOpenCoach } = useOutletContext();
+  const { onOpenCoach } = useOutletContext() || {};
 
   const [quests, setQuests] = useState([]);
   const [xp, setXp] = useState(1380);
@@ -62,15 +62,8 @@ export default function Dashboard() {
             ...q,
             progress: q.progress ?? 0,
             tint: q.tint || 'cyan',
-            done: q.status === 'completed'
+            done: q.done || q.status === 'completed'
           })));
-        } else {
-          // Fallback to MOCK
-          setQuests([
-            { id: "ai-bootcamp", title: "AI Fundamentals Bootcamp", description: "Finish module 3 and connect the core concepts.", reward: 100, progress: 72, category: "Core skill", tint: "cyan", due: "Due today", done: false },
-            { id: "project-scope", title: "Shape your project scope", description: "Turn your idea into a concise one-page brief.", reward: 150, progress: 0, category: "Project", tint: "coral", due: "Due Fri, 5 PM", done: false },
-            { id: "mentor-session", title: "Mentor checkpoint", description: "Prepare one question for your coaching session.", reward: 75, progress: 50, category: "Mentoring", tint: "violet", due: "Tomorrow", done: false }
-          ]);
         }
       } catch (err) {
         console.error("Error loading dashboard data", err);
@@ -101,10 +94,15 @@ export default function Dashboard() {
       setXp(prev => prev + quest.reward);
       setCelebrationReward(quest);
 
-      // Trigger backend API submission
+      // Trigger backend API submission / local simulation submission
       await learningService.submitWork(quest.id, `Completed ${quest.title} quest outcome.`);
+      
+      setToast({
+        title: "Submission Sent!",
+        body: `Submitted to the review queue. Waiting for mentor review to secure +${quest.reward} XP.`
+      });
     } catch (err) {
-      console.warn("Could not save completion to backend, local state remains", err);
+      console.warn("Could not save completion, local state remains", err);
     }
   };
 
@@ -175,7 +173,6 @@ export default function Dashboard() {
             src={HERO_IMAGE} 
             alt="Luminous campus landscape" 
             onError={(e) => {
-              // Fallback if proxy doesn't run locally
               e.target.style.display = 'none';
             }}
           />
@@ -204,13 +201,15 @@ export default function Dashboard() {
                 <Play className="w-3.5 h-3.5 fill-current" />
                 <span>Continue quest</span>
               </button>
-              <button 
-                onClick={onOpenCoach}
-                className="px-5 py-2.5 bg-white/60 text-theme-plum border border-theme-plum/10 font-semibold rounded-xl text-xs hover:bg-white flex items-center gap-2 hover:scale-[1.01] cursor-pointer transition-all"
-              >
-                <Bot className="w-3.5 h-3.5" />
-                <span>Ask Coach</span>
-              </button>
+              {onOpenCoach && (
+                <button 
+                  onClick={onOpenCoach}
+                  className="px-5 py-2.5 bg-white/60 text-theme-plum border border-theme-plum/10 font-semibold rounded-xl text-xs hover:bg-white flex items-center gap-2 hover:scale-[1.01] cursor-pointer transition-all"
+                >
+                  <Bot className="w-3.5 h-3.5" />
+                  <span>Ask Coach</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -376,27 +375,29 @@ export default function Dashboard() {
           </div>
 
           {/* Coach CTA signal banner */}
-          <div className="p-6 rounded-2xl bg-theme-plum text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 shadow-md shadow-theme-plum/10">
-            {/* Ambient orbits */}
-            <div className="absolute right-0 bottom-0 w-36 h-36 bg-theme-berry/20 rounded-full blur-2xl"></div>
-            <div className="flex gap-4 items-center">
-              <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                <img className="w-10 h-10 object-contain rounded-full" src={COACH_IMAGE} alt="AI Coach" />
+          {onOpenCoach && (
+            <div className="p-6 rounded-2xl bg-theme-plum text-white relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 shadow-md shadow-theme-plum/10">
+              {/* Ambient orbits */}
+              <div className="absolute right-0 bottom-0 w-36 h-36 bg-theme-berry/20 rounded-full blur-2xl"></div>
+              <div className="flex gap-4 items-center">
+                <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                  <img className="w-10 h-10 object-contain rounded-full" src={COACH_IMAGE} alt="AI Coach" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[9px] font-black text-theme-peach uppercase tracking-widest font-sans">Coach Signal</span>
+                  <h3 className="font-display font-bold text-sm">Unsure where to start?</h3>
+                  <p className="text-[11px] text-white/70 leading-relaxed font-sans">Ask a question, get a tiny plan, and move forward with intent.</p>
+                </div>
               </div>
-              <div className="space-y-1">
-                <span className="text-[9px] font-black text-theme-peach uppercase tracking-widest font-sans">Coach Signal</span>
-                <h3 className="font-display font-bold text-sm">Unsure where to start?</h3>
-                <p className="text-[11px] text-white/70 leading-relaxed font-sans">Ask a question, get a tiny plan, and move forward with intent.</p>
-              </div>
+              <button 
+                onClick={onOpenCoach}
+                className="px-5 py-2.5 bg-white text-theme-plum font-bold rounded-xl text-xs flex items-center gap-1.5 shrink-0 hover:scale-[1.01] cursor-pointer hover:bg-theme-cream transition-all shadow-sm"
+              >
+                <span>Talk to Coach</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-theme-berry" />
+              </button>
             </div>
-            <button 
-              onClick={onOpenCoach}
-              className="px-5 py-2.5 bg-white text-theme-plum font-bold rounded-xl text-xs flex items-center gap-1.5 shrink-0 hover:scale-[1.01] cursor-pointer hover:bg-theme-cream transition-all shadow-sm"
-            >
-              <span>Talk to Coach</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-theme-berry" />
-            </button>
-          </div>
+          )}
         </div>
 
         {/* Sidebar Widgets Column */}
@@ -518,39 +519,35 @@ export default function Dashboard() {
               </div>
 
               <div className="space-y-3">
-                <p className="text-[10px] font-black text-theme-plum/60 tracking-wider uppercase">What You'll Do</p>
-                <div className="space-y-2 text-xs text-slate-600 font-sans">
-                  <div className="flex gap-2.5 items-start">
-                    <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
-                    <span>Review the clear outcome for this activity.</span>
-                  </div>
-                  <div className="flex gap-2.5 items-start">
-                    <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
-                    <span>Take the focused next step without distractions.</span>
-                  </div>
-                  <div className="flex gap-2.5 items-start">
-                    <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
-                    <span>Return to claim your visible progress and secure badges.</span>
-                  </div>
-                </div>
+                <p className="text-[10px] font-black text-theme-plum/60 tracking-wider uppercase">Submit Your Outcome</p>
+                <textarea
+                  id="quest-submission-input"
+                  placeholder="Describe your learning outcome or paste your project summary link here..."
+                  className="w-full h-24 p-3 bg-slate-50 border border-theme-plum/10 rounded-xl text-xs text-theme-plum placeholder-slate-400 focus:outline-none focus:border-theme-berry transition-all font-sans"
+                />
               </div>
 
               <div className="flex gap-3 pt-2">
+                {onOpenCoach && (
+                  <button
+                    onClick={() => {
+                      setSelectedQuest(null);
+                      onOpenCoach();
+                    }}
+                    className="flex-1 py-3 bg-white hover:bg-slate-50 text-theme-plum border border-theme-plum/10 font-bold rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  >
+                    <Bot className="w-4 h-4 text-theme-berry" />
+                    <span>Ask Coach Helper</span>
+                  </button>
+                )}
                 <button
                   onClick={() => {
-                    setSelectedQuest(null);
-                    onOpenCoach();
+                    const text = document.getElementById("quest-submission-input")?.value || "Completed quest outcome.";
+                    handleCompleteQuest({ ...selectedQuest, description: text });
                   }}
-                  className="flex-1 py-3 bg-white hover:bg-slate-50 text-theme-plum border border-theme-plum/10 font-bold rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
-                >
-                  <Bot className="w-4 h-4 text-theme-berry" />
-                  <span>Ask Coach Helper</span>
-                </button>
-                <button
-                  onClick={() => handleCompleteQuest(selectedQuest)}
                   className="flex-1 py-3 bg-theme-plum text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 hover:scale-[1.01] cursor-pointer hover:bg-theme-berry transition-all shadow-md shadow-theme-plum/10"
                 >
-                  <span>Complete quest</span>
+                  <span>Submit Quest</span>
                   <ArrowUpRight className="w-4 h-4" />
                 </button>
               </div>
@@ -595,31 +592,18 @@ export default function Dashboard() {
               </div>
 
               <div className="space-y-1">
-                <span className="text-[10px] font-black text-theme-berry uppercase tracking-widest font-sans">Quest Complete</span>
-                <h2 className="font-display font-black text-2xl text-theme-plum">You moved the route!</h2>
-                <p className="text-xs text-slate-500 font-sans">
-                  <strong className="text-theme-berry font-bold text-sm">+{celebrationReward.reward} XP</strong> has been added to your Katalyst total.
+                <span className="text-[10px] font-black text-theme-berry uppercase tracking-widest font-sans">Quest Submitted</span>
+                <h2 className="font-display font-black text-2xl text-theme-plum font-bold">Outcome Uploaded!</h2>
+                <p className="text-xs text-slate-500 font-sans mt-2">
+                  Your work has been placed in the Coach review queue. Check back soon for scoring.
                 </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 p-4 bg-slate-50 rounded-2xl border border-theme-plum/5">
-                <div className="flex flex-col items-center gap-1">
-                  <Flame className="w-5 h-5 text-theme-berry fill-theme-berry" />
-                  <span className="text-[10px] text-slate-500">Streak Status</span>
-                  <span className="text-xs font-black text-theme-plum">{streak} Days Spark</span>
-                </div>
-                <div className="flex flex-col items-center gap-1 border-l border-theme-plum/5">
-                  <Sparkles className="w-5 h-5 text-theme-peach" />
-                  <span className="text-[10px] text-slate-500">Current Level</span>
-                  <span className="text-xs font-black text-theme-plum">Level {level} Progress</span>
-                </div>
               </div>
 
               <button 
                 onClick={() => setCelebrationReward(null)}
                 className="w-full py-3 bg-theme-plum text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-theme-berry cursor-pointer transition-all shadow-md shadow-theme-plum/10"
               >
-                <span>Claim the win</span>
+                <span>Continue Learning</span>
                 <Check className="w-4 h-4" />
               </button>
             </motion.section>

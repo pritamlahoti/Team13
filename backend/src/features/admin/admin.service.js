@@ -1,3 +1,5 @@
+//Sakshi Nagare
+
 const adminRepo = require('./admin.repo');
 const { parsePagination, parseSort } = require('./admin.utils');
 
@@ -95,6 +97,28 @@ function getStudentProgress(id) {
   return adminRepo.getStudentProgress(id);
 }
 
+function listMentors(query) {
+  const { skip, take, page, limit } = parsePagination(query);
+  const orderBy = parseSort(query, ['createdAt', 'name', 'email'], 'createdAt', 'desc');
+  
+  const where = {};
+  if (query.search) {
+    where.OR = [
+      { name: { contains: query.search, mode: 'insensitive' } },
+      { email: { contains: query.search, mode: 'insensitive' } }
+    ];
+  }
+
+  return adminRepo.listMentors(where, orderBy, skip, take).then(result => ({
+    ...result,
+    page, limit
+  }));
+}
+
+function getMentor(id) {
+  return adminRepo.getMentor(id);
+}
+
 function getAnalyticsOverview(filters) {
   return adminRepo.getAnalyticsOverview(filters);
 }
@@ -118,6 +142,8 @@ module.exports = {
   listStudents,
   getStudent,
   getStudentProgress,
+  listMentors,
+  getMentor,
   getAnalyticsOverview,
   getAtRiskStudents,
   generateAdminReport

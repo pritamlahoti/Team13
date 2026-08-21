@@ -1,3 +1,5 @@
+//Sakshi Nagare
+
 const prisma = require('../../config/prisma');
 
 async function getDashboardStats() {
@@ -136,10 +138,11 @@ async function getStudentProgress(id) {
 }
 
 async function listMentors(where, orderBy, skip, take) {
+  const finalWhere = { ...where, role: 'katalyst_management' };
   const [total, data] = await prisma.$transaction([
-    prisma.user.count({ where }),
+    prisma.user.count({ where: finalWhere }),
     prisma.user.findMany({
-      where,
+      where: finalWhere,
       orderBy,
       skip,
       take,
@@ -147,12 +150,23 @@ async function listMentors(where, orderBy, skip, take) {
         id: true,
         name: true,
         email: true,
-        cohortYear: true,
         createdAt: true
       }
     })
   ]);
   return { total, data };
+}
+
+async function getMentor(id) {
+  return prisma.user.findFirst({
+    where: { id, role: 'katalyst_management' },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      createdAt: true
+    }
+  });
 }
 
 async function getAnalyticsOverview(filters = {}) {
@@ -209,6 +223,7 @@ module.exports = {
   getStudent,
   getStudentProgress,
   listMentors,
+  getMentor,
   getAnalyticsOverview,
   getAtRiskStudents
 };
