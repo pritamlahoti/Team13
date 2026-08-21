@@ -58,6 +58,10 @@ export default function AppRoutes() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/admin" element={<Admin />} />
+<<<<<<< HEAD
+=======
+
+>>>>>>> 635c609 (starting for admin frontend)
         </Route>
         
         {/* Catch-all */}

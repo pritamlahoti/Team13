@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import React from 'react';
+>>>>>>> 635c609 (starting for admin frontend)
 import { useAuth } from '../hooks/useAuth';
 
 export default function PublicRoute({ children }) {
