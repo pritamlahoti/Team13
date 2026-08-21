@@ -15,8 +15,13 @@ router.get(
   requireAuth,
   canViewUser,
   validate(yearQuerySchema, 'query'),
-  async (req, res) => {
-    res.json(await xpService.getYearlyXp(req.params.id, req.validatedQuery.year));
+  async (req, res, next) => {
+    try {
+      const data = await xpService.getYearlyXp(req.params.id, req.validatedQuery.year);
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
   }
 );
 
@@ -25,9 +30,15 @@ router.get(
   requireAuth,
   canViewUser,
   validate(ledgerQuerySchema, 'query'),
-  async (req, res) => {
-    res.json(await xpService.getLedger(req.params.id, req.validatedQuery));
+  async (req, res, next) => {
+    try {
+      const data = await xpService.getLedger(req.params.id, req.validatedQuery);
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
   }
 );
 
 module.exports = router;
+

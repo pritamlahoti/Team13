@@ -7,53 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  student
-  katalyst_management
-  higher_management
-}
-
-enum ModuleType {
-  session
-  course
-  mentoring
-  project
-  assignment
-  milestone
-}
-
-enum Classification {
-  mandatory
-  optional
-  certificate
-}
-
-enum ScoringMode {
-  objective
-  subjective
-}
-
-enum EnrollmentStatus {
-  enrolled
-  completed
-}
-
-enum SubmissionStatus {
-  pending
-  reviewed
-  scored
-}
-
-enum ReviewerType {
-  management
-  ai_coach
-}
-
-enum NotificationType {
-  nudge
-  escalation
-}
-
 model User {
   id           String   @id @default(uuid())
   name         String
@@ -63,12 +16,18 @@ model User {
   cohortYear   Int?     @map("cohort_year")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  modulesCreated   Module[]       @relation("ModuleCreator")
-  enrollments      Enrollment[]
-  submissions      Submission[]
-  reviews          Review[]
-  teamMemberships  TeamMember[]
-  notifications    Notification[]
+  modulesCreated  Module[]           @relation("ModuleCreator")
+  enrollments     Enrollment[]
+  submissions     Submission[]
+  reviews         Review[]
+  teamMemberships TeamMember[]
+  notifications   Notification[]
+
+  // A mentor (katalyst_management) can have many mentored students, and a
+  // student can (per the unique constraint below) only be linked to one
+  // mentor at a time — but Prisma still models both sides as to-many.
+  mentorships   MentorAssignment[] @relation("MentorAssignments")
+  menteeOf      MentorAssignment[] @relation("StudentAssignments")
 
   @@map("users")
 }
@@ -85,6 +44,9 @@ model Team {
 
 model Module {
   id             String         @id @default(uuid())
+  title          String?
+  description    String?
+  rewardXp       Int?           @map("reward_xp")
   type           ModuleType
   classification Classification
   scoringMode    ScoringMode    @default(subjective) @map("scoring_mode")
@@ -181,4 +143,73 @@ model Notification {
   targetUser User? @relation(fields: [targetUserId], references: [id])
 
   @@map("notifications")
+}
+
+// Discovered already live on the shared DB (added outside of any committed
+// migration) — formalized here rather than rebuilt, since the data/table
+// already exists. mentorId always points at a katalyst_management user; the
+// unique constraint enforces one active mentor per student.
+model MentorAssignment {
+  id         String   @id @default(uuid())
+  mentorId   String   @map("mentor_id")
+  studentId  String   @map("student_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+  active     Boolean  @default(true)
+
+  mentor  User @relation("MentorAssignments", fields: [mentorId], references: [id])
+  student User @relation("StudentAssignments", fields: [studentId], references: [id])
+
+  @@unique([mentorId, studentId])
+  @@map("mentor_assignments")
+}
+
+enum Role {
+  student
+  katalyst_management
+  higher_management
+  // Unused by application logic today (mentors are katalyst_management
+  // users per existing role checks) — kept because it's already live on
+  // the shared DB and dropping it would be a destructive enum change.
+  mentor
+}
+
+enum ModuleType {
+  session
+  course
+  mentoring
+  project
+  assignment
+  milestone
+}
+
+enum Classification {
+  mandatory
+  optional
+  certificate
+}
+
+enum ScoringMode {
+  objective
+  subjective
+}
+
+enum EnrollmentStatus {
+  enrolled
+  completed
+}
+
+enum SubmissionStatus {
+  pending
+  reviewed
+  scored
+}
+
+enum ReviewerType {
+  management
+  ai_coach
+}
+
+enum NotificationType {
+  nudge
+  escalation
 }

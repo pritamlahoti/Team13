@@ -1,10 +1,11 @@
 // Single choke point for all Gemini calls (backend PRD section 4.4) — retry/
 // timeout/error-handling lives here once instead of duplicated per route.
-const MODEL = 'gemini-2.0-flash';
-const TIMEOUT_MS = 9000;
+
+const MODEL = 'gemini-3.6-flash';
+const TIMEOUT_MS = 25000;
 
 async function generateText(prompt) {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = (process.env.GEMINI_API_KEY || '').trim();
   if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
 
   const controller = new AbortController();
