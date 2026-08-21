@@ -1,19 +1,16 @@
-const { query } = require('../../config/db');
+const prisma = require('../../config/prisma');
 
-const findByEmail = (email) =>
-  query('SELECT * FROM users WHERE email = $1', [email]).then((r) => r.rows[0]);
+const USER_SUMMARY_FIELDS = { id: true, name: true, email: true, role: true, cohortYear: true };
+
+const findByEmail = (email) => prisma.user.findUnique({ where: { email } });
 
 const findById = (id) =>
-  query('SELECT id, name, email, role, cohort_year FROM users WHERE id = $1', [id]).then(
-    (r) => r.rows[0]
-  );
+  prisma.user.findUnique({ where: { id }, select: USER_SUMMARY_FIELDS });
 
 const create = ({ name, email, passwordHash, role, cohortYear }) =>
-  query(
-    `INSERT INTO users (name, email, password_hash, role, cohort_year)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, name, email, role, cohort_year`,
-    [name, email, passwordHash, role, cohortYear || null]
-  ).then((r) => r.rows[0]);
+  prisma.user.create({
+    data: { name, email, passwordHash, role, cohortYear: cohortYear || null },
+    select: USER_SUMMARY_FIELDS,
+  });
 
 module.exports = { findByEmail, findById, create };
