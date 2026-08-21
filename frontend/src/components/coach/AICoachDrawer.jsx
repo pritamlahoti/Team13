@@ -65,24 +65,45 @@ export default function AICoachDrawer({ isOpen, onClose }) {
     setInput('');
     setLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      let botText = "";
-      const lower = textToSend.toLowerCase();
+    try {
+      // Try the real AI Coach nudge endpoint
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/ai-coach/nudge`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ userId: user?.id, prompt: textToSend }),
+      });
 
-      if (lower.includes("level 5") || lower.includes("reach level")) {
-        botText = "To reach Level 5, you need to earn 2,000 total XP. You can achieve this by completing quests on the Quest Board (each awards 100-150 XP) and playing the Daily Challenge rounds (which award 25 XP per round). Keep coding and learning!";
-      } else if (lower.includes("project scope") || lower.includes("review my project")) {
-        botText = "I'd love to help! Tell me about the core problem you're addressing, who the users are, and the basic solution. Let's aim to write a concise one-page scope document together.";
-      } else if (lower.includes("ai agent") || lower.includes("agents")) {
-        botText = "An AI agent is an autonomous software entity that uses large language models (like Gemini) to read input, make plans, select appropriate tools, and act. In reading your progress, I assist as a specialized learning agent!";
-      } else {
-        botText = "That is a fascinating question. Let's break this goal down: what is one tiny coding step or conceptual topic you can focus on in the next 15 minutes? Completing your active Bootcamp quest would be an excellent choice.";
+      if (response.ok) {
+        const data = await response.json();
+        const botText = data.message || data.draftFeedback || "I've noted your question. Keep exploring your learning path!";
+        setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), from: 'coach', text: botText }]);
+        setLoading(false);
+        return;
       }
+    } catch {
+      // Backend offline — fall through to mock
+    }
 
-      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), from: 'coach', text: botText }]);
-      setLoading(false);
-    }, 1000);
+    // Mock fallback responses when backend is unavailable
+    const lower = textToSend.toLowerCase();
+    let botText = "";
+    if (lower.includes("level 5") || lower.includes("reach level")) {
+      botText = "To reach Level 5, you need to earn 2,000 total XP. Complete quests on the Quest Board (100-150 XP each) and Daily Challenges (25 XP per round). Keep coding and learning!";
+    } else if (lower.includes("project scope") || lower.includes("review my project")) {
+      botText = "I'd love to help! Tell me about the core problem you're addressing, who the users are, and the basic solution. Let's write a concise one-page scope document together.";
+    } else if (lower.includes("ai agent") || lower.includes("agents")) {
+      botText = "An AI agent is an autonomous software entity that uses large language models (like Gemini) to read input, make plans, select tools, and act. In reading your progress, I assist as a specialized learning agent!";
+    } else {
+      botText = "That is a fascinating question. What is one small learning step you can focus on in the next 15 minutes? Completing your active Bootcamp quest would be an excellent starting point.";
+    }
+
+    setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), from: 'coach', text: botText }]);
+    setLoading(false);
   };
 
   const handleSubmit = (e) => {

@@ -1,0 +1,2139 @@
+{
+  "summary": {
+    "generatedAt": "2026-08-21T10:41:15.416Z",
+    "environment": "test",
+    "baseUrl": "http://localhost:64822",
+    "totalTestCases": 34,
+    "passedCount": 27,
+    "failedCount": 7,
+    "passRate": "79.4%"
+  },
+  "groupStatistics": [
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "total": 6,
+      "passed": 5,
+      "failed": 1,
+      "passRate": "83.3%"
+    },
+    {
+      "group": "Group 3: Enrollment Management (FR003, FR004)",
+      "total": 4,
+      "passed": 4,
+      "failed": 0,
+      "passRate": "100.0%"
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "total": 6,
+      "passed": 5,
+      "failed": 1,
+      "passRate": "83.3%"
+    },
+    {
+      "group": "Group 5: XP Ledger & Yearly Aggregations (FR008, FR009)",
+      "total": 4,
+      "passed": 3,
+      "failed": 1,
+      "passRate": "75.0%"
+    },
+    {
+      "group": "Group 6: Filtered Reports (FR010)",
+      "total": 4,
+      "passed": 1,
+      "failed": 3,
+      "passRate": "25.0%"
+    },
+    {
+      "group": "Group 7: AI Coach Services (FR014, FR025, FR026)",
+      "total": 3,
+      "passed": 2,
+      "failed": 1,
+      "passRate": "66.7%"
+    }
+  ],
+  "testCases": [
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-001: Valid login returns JWT and user payload",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:04.475Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/auth/login",
+        "auth": "None (Unauthenticated)",
+        "body": {
+          "email": "admin@katalyst.com",
+          "password": "Password@123"
+        }
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 1326,
+        "json": {
+          "user": {
+            "id": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "name": "Katalyst Admin",
+            "email": "admin@katalyst.com",
+            "role": "katalyst_management",
+            "cohortYear": null,
+            "createdAt": "2026-08-21T06:26:38.093Z"
+          },
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMGQ1NTgwYWQtNTFiOS00MzgwLWE2YmQtNzMyMWZlY2NiNGM2Iiwicm9sZSI6ImthdGFseXN0X21hbmFnZW1lbnQiLCJpYXQiOjE3ODczMDg4MDQsImV4cCI6MTc4NzM5NTIwNH0.1ZTzhqP3GT6AVi_OH6K3uoNNHcEZYNt8lGBl8ZrFWOw"
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-002: Invalid password returns 401 Unauthorized",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:05.008Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/auth/login",
+        "auth": "None (Unauthenticated)",
+        "body": {
+          "email": "admin@katalyst.com",
+          "password": "WrongPassword!"
+        }
+      },
+      "response": {
+        "statusCode": 401,
+        "durationMs": 531,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Invalid email or password"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-003: Missing Authorization header returns 401",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:05.022Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/auth/me",
+        "auth": "None (Unauthenticated)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 401,
+        "durationMs": 12,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Missing token"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-004: Malformed JWT token returns 401",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:05.041Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/auth/me",
+        "auth": "Bearer (Custom / Token)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 401,
+        "durationMs": 17,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Invalid or expired token"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-005: Katalyst Management can signup new accounts",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:08.931Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/auth/signup",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {
+          "name": "QA Student",
+          "email": "qa.student.1787308807235@student.katalyst.com",
+          "password": "Password@123",
+          "role": "student",
+          "cohortYear": 2026
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 1695,
+        "json": {
+          "user": {
+            "id": "4e1595b2-cd04-4eb4-a8a5-4891eaa727f8",
+            "name": "QA Student",
+            "email": "qa.student.1787308807235@student.katalyst.com",
+            "role": "student",
+            "cohortYear": 2026
+          },
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNGUxNTk1YjItY2QwNC00ZWI0LWE4YTUtNDg5MWVhYTcyN2Y4Iiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE3ODczMDg4MDgsImV4cCI6MTc4NzM5NTIwOH0.ncgwNVmne6hUciJFsa81XDPy5q-KstjKFKB9BsZLFXw"
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-006: Students attempting POST /auth/signup get 403 Forbidden",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:08.953Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/auth/signup",
+        "auth": "Bearer (Student)",
+        "body": {
+          "name": "Hacker",
+          "email": "hacker.1787308808931@katalyst.com",
+          "password": "Password@123",
+          "role": "katalyst_management"
+        }
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 21,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Forbidden"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 1: Authentication & Authorization",
+      "name": "TC-AUTH-007: GET /auth/me returns profile without password hash",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:09.616Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/auth/me",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 662,
+        "json": {
+          "id": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "name": "Aarav Sharma",
+          "email": "aarav.sharma@student.katalyst.com",
+          "role": "student",
+          "cohortYear": 2023
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-001: Management creates modules across all 6 activity types",
+      "passed": true,
+      "details": "Created 6/6 module types",
+      "executedAt": "2026-08-21T10:40:11.774Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/modules",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {
+          "type": "milestone",
+          "classification": "optional",
+          "scoringMode": "subjective",
+          "dueDate": null
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 362,
+        "json": {
+          "id": "3faf946c-c804-4602-b1bc-0bf7c4869387",
+          "title": null,
+          "description": null,
+          "rewardXp": null,
+          "type": "milestone",
+          "classification": "optional",
+          "scoringMode": "subjective",
+          "dueDate": "1970-01-01T00:00:00.000Z",
+          "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+          "createdAt": "2026-08-21T10:40:11.433Z"
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-002: Mandatory module rejects missing dueDate with 400 Bad Request",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:11.790Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/modules",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {
+          "type": "session",
+          "classification": "mandatory",
+          "scoringMode": "objective"
+        }
+      },
+      "response": {
+        "statusCode": 400,
+        "durationMs": 15,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "dueDate: dueDate is required for mandatory modules"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-003: Student attempting POST /modules receives 403 Forbidden",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:11.803Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/modules",
+        "auth": "Bearer (Student)",
+        "body": {
+          "type": "course",
+          "classification": "optional",
+          "scoringMode": "objective"
+        }
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 12,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Forbidden"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-004: GET /modules returns array of active modules",
+      "passed": false,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:13.666Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/modules",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 1859,
+        "json": {
+          "data": [
+            {
+              "id": "3faf946c-c804-4602-b1bc-0bf7c4869387",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "milestone",
+              "classification": "optional",
+              "scoringMode": "subjective",
+              "dueDate": "1970-01-01T00:00:00.000Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:40:11.433Z"
+            },
+            {
+              "id": "7144fcd3-d17d-41f3-93dc-d720f2740adf",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "assignment",
+              "classification": "optional",
+              "scoringMode": "objective",
+              "dueDate": "1970-01-01T00:00:00.000Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:40:11.073Z"
+            },
+            {
+              "id": "dbb8d554-7dc9-45da-af78-66098a01c04c",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "project",
+              "classification": "mandatory",
+              "scoringMode": "subjective",
+              "dueDate": "2026-09-04T10:40:10.851Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:40:10.872Z"
+            },
+            {
+              "id": "2804027f-096d-4012-a543-28faec924172",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "mentoring",
+              "classification": "optional",
+              "scoringMode": "subjective",
+              "dueDate": "1970-01-01T00:00:00.000Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:40:10.679Z"
+            },
+            {
+              "id": "4ee1d38a-71bc-41fb-a86d-967e1e42edcb",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "course",
+              "classification": "optional",
+              "scoringMode": "subjective",
+              "dueDate": "1970-01-01T00:00:00.000Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:40:10.362Z"
+            },
+            {
+              "id": "47f52745-57d5-4fb8-9c6a-15d87d19a12a",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "session",
+              "classification": "mandatory",
+              "scoringMode": "objective",
+              "dueDate": "2026-09-04T10:40:09.617Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:40:09.630Z"
+            },
+            {
+              "id": "07bac7dc-95e0-4842-8329-7bfca94700a8",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "project",
+              "classification": "optional",
+              "scoringMode": "subjective",
+              "dueDate": null,
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:21:46.039Z"
+            },
+            {
+              "id": "da446836-e6f2-4d1a-a6e8-b2427424681d",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "session",
+              "classification": "mandatory",
+              "scoringMode": "objective",
+              "dueDate": "2026-08-28T10:21:45.408Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:21:45.426Z"
+            },
+            {
+              "id": "8cd708d7-4faf-49af-ba12-70b4b2d3c5a4",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "project",
+              "classification": "optional",
+              "scoringMode": "subjective",
+              "dueDate": null,
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:20:27.730Z"
+            },
+            {
+              "id": "8025b240-26c1-4df3-a02c-efb5f6b30fce",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "session",
+              "classification": "mandatory",
+              "scoringMode": "objective",
+              "dueDate": "2026-08-28T10:20:27.415Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:20:27.422Z"
+            },
+            {
+              "id": "e348bcd0-0c0e-4895-a371-219927995768",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "course",
+              "classification": "optional",
+              "scoringMode": "objective",
+              "dueDate": null,
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:20:24.548Z"
+            },
+            {
+              "id": "66d3f16e-ba44-417e-9333-3fb373cb2488",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "milestone",
+              "classification": "optional",
+              "scoringMode": "subjective",
+              "dueDate": "1970-01-01T00:00:00.000Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:20:21.077Z"
+            },
+            {
+              "id": "cb9a3c04-bacb-4b0f-ad50-2b699a4923b6",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "assignment",
+              "classification": "optional",
+              "scoringMode": "objective",
+              "dueDate": "1970-01-01T00:00:00.000Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:20:20.846Z"
+            },
+            {
+              "id": "aeb68f1a-c2e1-4165-9e18-d7cd3ad1cb3b",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "project",
+              "classification": "mandatory",
+              "scoringMode": "subjective",
+              "dueDate": "2026-09-04T10:20:20.405Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:20:20.423Z"
+            },
+            {
+              "id": "c47699af-2cae-4228-a433-982d071390b7",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "mentoring",
+              "classification": "optional",
+              "scoringMode": "subjective",
+              "dueDate": "1970-01-01T00:00:00.000Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:20:20.164Z"
+            },
+            {
+              "id": "5e51b03e-1e22-43d4-96b1-0b4fa8d67b3a",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "course",
+              "classification": "optional",
+              "scoringMode": "subjective",
+              "dueDate": "1970-01-01T00:00:00.000Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:20:19.544Z"
+            },
+            {
+              "id": "d8d50e49-e527-4126-b296-8bac7365d800",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "session",
+              "classification": "mandatory",
+              "scoringMode": "objective",
+              "dueDate": "2026-09-04T10:20:18.995Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:20:18.998Z"
+            },
+            {
+              "id": "24943b8e-4808-4932-bb71-56c66340c129",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "project",
+              "classification": "optional",
+              "scoringMode": "subjective",
+              "dueDate": null,
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:17:22.655Z"
+            },
+            {
+              "id": "c06ce581-f5d4-4d00-b185-e2a291a46771",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "session",
+              "classification": "mandatory",
+              "scoringMode": "objective",
+              "dueDate": "2026-08-28T10:17:21.963Z",
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:17:21.977Z"
+            },
+            {
+              "id": "7709061f-e0af-4a77-bd44-dde010992609",
+              "title": null,
+              "description": null,
+              "rewardXp": null,
+              "type": "project",
+              "classification": "optional",
+              "scoringMode": "subjective",
+              "dueDate": null,
+              "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+              "createdAt": "2026-08-21T10:07:07.357Z"
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 20,
+            "total": 149,
+            "totalPages": 8
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-005: GET /modules/:id returns valid module object",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:14.226Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/modules/3faf946c-c804-4602-b1bc-0bf7c4869387",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 560,
+        "json": {
+          "id": "3faf946c-c804-4602-b1bc-0bf7c4869387",
+          "title": null,
+          "description": null,
+          "rewardXp": null,
+          "type": "milestone",
+          "classification": "optional",
+          "scoringMode": "subjective",
+          "dueDate": "1970-01-01T00:00:00.000Z",
+          "createdBy": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+          "createdAt": "2026-08-21T10:40:11.433Z"
+        }
+      }
+    },
+    {
+      "group": "Group 2: Module Management (FR001, FR002)",
+      "name": "TC-MOD-006: GET /modules/:id returns 404 for non-existent UUID",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:14.572Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/modules/00000000-0000-0000-0000-000000000000",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 404,
+        "durationMs": 344,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Module not found"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 3: Enrollment Management (FR003, FR004)",
+      "name": "TC-ENR-001: Student enrolls in module (status: enrolled)",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:15.662Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/enrollments",
+        "auth": "Bearer (Student)",
+        "body": {
+          "moduleId": "3d67a333-a909-4bea-a82b-c68a6931d309"
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 781,
+        "json": {
+          "id": "a76bffbe-ae69-49ff-a724-4f2d14c7aeb6",
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "moduleId": "3d67a333-a909-4bea-a82b-c68a6931d309",
+          "status": "enrolled"
+        }
+      }
+    },
+    {
+      "group": "Group 3: Enrollment Management (FR003, FR004)",
+      "name": "TC-ENR-002: GET /enrollments returns student enrolled list",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:16.674Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/enrollments",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 1010,
+        "json": [
+          {
+            "id": "4420a622-9400-4648-ad07-499c33a78fb2",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+            "status": "completed"
+          },
+          {
+            "id": "2e8cf239-cbd9-40bb-ae0a-ca72836d1b7f",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+            "status": "completed"
+          },
+          {
+            "id": "34987d80-8758-4bb2-9c4b-3d734cb27c34",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "c4b68715-5cbb-46ea-b751-1260af92440d",
+            "status": "completed"
+          },
+          {
+            "id": "c2b18c2a-fb4b-44d4-9a96-8915833622b1",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "9e6fae8d-aafa-43cb-a58c-21e4157dfc4e",
+            "status": "completed"
+          },
+          {
+            "id": "d91fa5bf-cd57-437a-b185-4a338f2f8d80",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "6922f50f-7871-49c7-933d-50f467872815",
+            "status": "completed"
+          },
+          {
+            "id": "2a8a6e24-5b09-41d4-a71b-835416491b56",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "d5341ffb-49a3-41e1-9ca3-65633fd1d4f5",
+            "status": "completed"
+          },
+          {
+            "id": "91fd1068-2f0e-4108-870f-e7c78cc1ebdb",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "1ab170ab-ad39-40a8-b854-3186ee951002",
+            "status": "completed"
+          },
+          {
+            "id": "631392ef-e148-4100-bd2a-55c40ade16a5",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+            "status": "completed"
+          },
+          {
+            "id": "2c5e6086-5b31-4d9b-9d52-ac65b4f3472f",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "8fcde792-56c0-4e78-8773-9b9d059c0358",
+            "status": "enrolled"
+          },
+          {
+            "id": "a71d9c20-2dd5-4a8f-9096-57b4e4bc2cf2",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "8f2b6b8f-52fb-4232-b5fb-c29208e6d546",
+            "status": "enrolled"
+          },
+          {
+            "id": "d089cd07-138a-4038-92b9-db343b5559c0",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "5e8a4248-8869-418c-8134-3cc00bcabcd7",
+            "status": "completed"
+          },
+          {
+            "id": "7ea613be-27c3-40e0-a5ea-2f1baaa66bde",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "e860d66e-24bb-4e48-b53a-506cb5856c0c",
+            "status": "completed"
+          },
+          {
+            "id": "66ef53c7-9922-4af0-a36b-ecd09e4e83be",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "fbf597bc-619a-445e-b720-f998d0db85b9",
+            "status": "completed"
+          },
+          {
+            "id": "50309648-0c68-4511-a2a7-917972b24e1c",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "4d9faef3-c688-47d4-9382-45a88f97032f",
+            "status": "completed"
+          },
+          {
+            "id": "de512ed4-f856-43c9-9b65-4bb30b9abd66",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "64982828-5b1e-4520-abbc-e1978e800c3c",
+            "status": "completed"
+          },
+          {
+            "id": "23b4ede3-25b2-46d0-a939-a8fb3f695244",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "d318057c-b48f-4608-b649-b1147be4207e",
+            "status": "completed"
+          },
+          {
+            "id": "d9d1bba6-f37c-4634-9b5a-c44eeb2ff5c2",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "124c69bf-25f2-41cf-a240-fc0d0375119d",
+            "status": "completed"
+          },
+          {
+            "id": "4c031c00-8e2d-4701-89f6-123acd581405",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "1bd018f6-617e-4748-97e9-300fd22e0c93",
+            "status": "completed"
+          },
+          {
+            "id": "51154353-0211-45b1-979d-934815465ef9",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "a769feb6-72d6-4be7-a7d6-e2e70b58981e",
+            "status": "completed"
+          },
+          {
+            "id": "69c240ab-3d6c-4f4f-9fdd-868ed5bfd922",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "f000f77b-6b05-49dc-b81c-f6a21f066e2a",
+            "status": "completed"
+          },
+          {
+            "id": "c7fddaa9-d464-4bc5-a322-efa98a2163fe",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "6def7718-585f-4e52-8ebd-1a323d3f4be8",
+            "status": "completed"
+          },
+          {
+            "id": "eb85a59e-fb2c-41d2-9e5d-bcaae72427ee",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "e02ca8cb-482c-4906-ac89-e998201615a6",
+            "status": "completed"
+          },
+          {
+            "id": "d05dafbb-40a8-4f5b-836d-dfd279bf563b",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "22735f82-5147-4c4d-b1e9-3df854e891d8",
+            "status": "completed"
+          },
+          {
+            "id": "2d3c4bfb-5373-4044-ac39-233fecd8228c",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "f01e6405-631e-4cba-89e4-f53c84dbd79a",
+            "status": "completed"
+          },
+          {
+            "id": "d16ea4cb-bebe-4c9f-9637-d81bbb8713ed",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "1933584f-8b0e-4dba-bcee-9030bc61821b",
+            "status": "completed"
+          },
+          {
+            "id": "9804ff5e-cf50-499d-9f4e-15f8167200b1",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "c06ce581-f5d4-4d00-b185-e2a291a46771",
+            "status": "completed"
+          },
+          {
+            "id": "2cef5d8b-bac1-463a-9172-c721611a82f8",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "e348bcd0-0c0e-4895-a371-219927995768",
+            "status": "completed"
+          },
+          {
+            "id": "f59478f2-6e44-4911-8ac0-964f912149ed",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "da446836-e6f2-4d1a-a6e8-b2427424681d",
+            "status": "completed"
+          },
+          {
+            "id": "a76bffbe-ae69-49ff-a724-4f2d14c7aeb6",
+            "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+            "moduleId": "3d67a333-a909-4bea-a82b-c68a6931d309",
+            "status": "enrolled"
+          }
+        ]
+      }
+    },
+    {
+      "group": "Group 3: Enrollment Management (FR003, FR004)",
+      "name": "TC-ENR-003: PATCH /enrollments/:id/complete marks status as completed",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:17.830Z",
+      "request": {
+        "type": "PATCH",
+        "endpoint": "/enrollments/a76bffbe-ae69-49ff-a724-4f2d14c7aeb6/complete",
+        "auth": "Bearer (Student)",
+        "body": {}
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 1155,
+        "json": {
+          "id": "a76bffbe-ae69-49ff-a724-4f2d14c7aeb6",
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "moduleId": "3d67a333-a909-4bea-a82b-c68a6931d309",
+          "status": "completed"
+        }
+      }
+    },
+    {
+      "group": "Group 3: Enrollment Management (FR003, FR004)",
+      "name": "TC-ENR-004: PATCH /enrollments/:id/complete returns 404 for invalid ID",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:18.168Z",
+      "request": {
+        "type": "PATCH",
+        "endpoint": "/enrollments/00000000-0000-0000-0000-000000000000/complete",
+        "auth": "Bearer (Student)",
+        "body": {}
+      },
+      "response": {
+        "statusCode": 404,
+        "durationMs": 336,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Enrollment not found"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-001: Objective submission triggers AI Coach auto-scoring",
+      "passed": true,
+      "details": "Status: scored",
+      "executedAt": "2026-08-21T10:40:33.471Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/submissions",
+        "auth": "Bearer (Student)",
+        "body": {
+          "moduleId": "95d728c2-6e4b-4317-a172-72325b2a1a42",
+          "contentRef": "Attended session and completed attendance quiz with 100% score"
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 13765,
+        "json": {
+          "id": "7de7497d-7d74-453f-b0d7-ff7e5d0d27bf",
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "moduleId": "95d728c2-6e4b-4317-a172-72325b2a1a42",
+          "submittedAt": "2026-08-21T10:40:20.000Z",
+          "contentRef": "Attended session and completed attendance quiz with 100% score",
+          "status": "scored",
+          "teamId": null
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-002: Subjective submission placed in pending queue",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:34.898Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/submissions",
+        "auth": "Bearer (Student)",
+        "body": {
+          "moduleId": "a967585a-ead6-4863-87ef-0d99d5b62201",
+          "contentRef": "https://github.com/student/cloud-native-capstone"
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 1426,
+        "json": {
+          "id": "1a1680c4-d1af-420a-ac7b-66d7e32ace3d",
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "moduleId": "a967585a-ead6-4863-87ef-0d99d5b62201",
+          "submittedAt": "2026-08-21T10:40:34.116Z",
+          "contentRef": "https://github.com/student/cloud-native-capstone",
+          "status": "pending",
+          "teamId": null
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-003: Katalyst Management views pending review queue",
+      "passed": false,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:37.643Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/submissions",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 2743,
+        "json": {
+          "data": [
+            {
+              "id": "556ff285-8ce7-4fd9-88fd-14421ba28489",
+              "userId": "1de5ce00-ab0d-41e4-94a0-8a8e3a29a360",
+              "moduleId": "6922f50f-7871-49c7-933d-50f467872815",
+              "submittedAt": "2026-06-22T06:28:49.079Z",
+              "contentRef": "Project repo: https://github.com/katalyst/open-innov",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "66792f70-927d-4235-8f7c-802457770682",
+              "userId": "23552087-5304-450e-970d-559b5b48d785",
+              "moduleId": "d5341ffb-49a3-41e1-9ca3-65633fd1d4f5",
+              "submittedAt": "2026-06-26T06:28:36.516Z",
+              "contentRef": "Completed all quiz questions with 92% score",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "dc61f260-65f1-4d19-9616-f13527fbb3ce",
+              "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+              "moduleId": "c4b68715-5cbb-46ea-b751-1260af92440d",
+              "submittedAt": "2026-06-26T06:28:54.124Z",
+              "contentRef": "Video presentation: https://loom.com/share/demo",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "0a828c40-ad75-4b0f-820a-9e395adfd1b4",
+              "userId": "23552087-5304-450e-970d-559b5b48d785",
+              "moduleId": "8f2b6b8f-52fb-4232-b5fb-c29208e6d546",
+              "submittedAt": "2026-06-30T06:28:37.089Z",
+              "contentRef": "Milestone reflection: https://docs.google.com/katalyst-milestone",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "a2d7ccea-e262-4371-856e-dcd68e45c0cb",
+              "userId": "de761a46-1444-456a-8f62-73b979f98707",
+              "moduleId": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+              "submittedAt": "2026-06-30T06:28:56.790Z",
+              "contentRef": "https://github.com/student/project-repo",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "de05293b-546b-46a1-ae3b-9d743df82b36",
+              "userId": "fc432d26-dc87-45f2-b577-7c75d0f794b7",
+              "moduleId": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+              "submittedAt": "2026-06-30T06:29:03.112Z",
+              "contentRef": "Video presentation: https://loom.com/share/demo",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "1cf71d20-f12c-4815-92c6-0b99c168aae0",
+              "userId": "edceaf44-b6bd-4e0e-b816-6cd6e57572ad",
+              "moduleId": "8f2b6b8f-52fb-4232-b5fb-c29208e6d546",
+              "submittedAt": "2026-07-02T06:28:40.009Z",
+              "contentRef": "https://drive.google.com/file/sample1",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "d06f9e07-adb9-4583-bcdc-a06acc653ed4",
+              "userId": "de761a46-1444-456a-8f62-73b979f98707",
+              "moduleId": "c4b68715-5cbb-46ea-b751-1260af92440d",
+              "submittedAt": "2026-07-08T06:28:56.568Z",
+              "contentRef": "Video presentation: https://loom.com/share/demo",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "bcc5a51c-9984-4c07-9d7d-e76e1c65823e",
+              "userId": "7ad66f05-9a2a-4b47-8805-9a8e94d6fa47",
+              "moduleId": "9e6fae8d-aafa-43cb-a58c-21e4157dfc4e",
+              "submittedAt": "2026-07-09T06:28:25.831Z",
+              "contentRef": "Mentoring session notes submitted to portal",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "e434d62b-f666-48d1-a05a-b16267e1c125",
+              "userId": "c3021d2d-6d4a-4d92-9759-39abd4bbac96",
+              "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+              "submittedAt": "2026-07-10T06:29:07.348Z",
+              "contentRef": "https://github.com/student/project-repo",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "f3337b92-c5ef-403d-b668-5f70f144f59b",
+              "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+              "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+              "submittedAt": "2026-07-11T06:28:53.008Z",
+              "contentRef": "Submitted via Katalyst Konnect portal — ref #7823",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "16f5ff91-0e76-4c93-8a77-84ad82a30d6c",
+              "userId": "fc432d26-dc87-45f2-b577-7c75d0f794b7",
+              "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+              "submittedAt": "2026-07-12T06:29:03.334Z",
+              "contentRef": "Project repo: https://github.com/katalyst/open-innov",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "22057fd8-bb61-4b98-9255-8b8b83ac973d",
+              "userId": "23552087-5304-450e-970d-559b5b48d785",
+              "moduleId": "aafbfc7c-6ad2-408f-9400-ee6c05557ec5",
+              "submittedAt": "2026-07-13T06:28:35.559Z",
+              "contentRef": "Attended full session — Certificate #KAT-2024-001",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "e2b6eabb-b851-4765-a666-7128d468786d",
+              "userId": "c3021d2d-6d4a-4d92-9759-39abd4bbac96",
+              "moduleId": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+              "submittedAt": "2026-07-14T06:29:05.954Z",
+              "contentRef": "Project repo: https://github.com/katalyst/open-innov",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "2605933f-b6f6-4a4a-a88f-3f6e1144a2cf",
+              "userId": "c6414163-d17d-40d9-931c-95c8c91c34b2",
+              "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+              "submittedAt": "2026-07-15T06:28:27.955Z",
+              "contentRef": "Completed all quiz questions with 92% score",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "433afe04-c47c-462d-9459-74cf7b7e34c2",
+              "userId": "1de5ce00-ab0d-41e4-94a0-8a8e3a29a360",
+              "moduleId": "1ab170ab-ad39-40a8-b854-3186ee951002",
+              "submittedAt": "2026-07-15T06:28:48.607Z",
+              "contentRef": "Video presentation: https://loom.com/share/demo",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "c1667e15-e053-4df3-8aca-766aebd4c2c1",
+              "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+              "moduleId": "6d650674-fa5a-4a3a-aee6-1f27e84b1cb3",
+              "submittedAt": "2026-07-16T06:28:52.559Z",
+              "contentRef": "https://github.com/student/project-repo",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "333463df-8d5c-4e43-9d39-26b23d9a9225",
+              "userId": "2e5a7468-f776-407e-ac83-fc1de68f5ef7",
+              "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+              "submittedAt": "2026-07-17T06:28:43.453Z",
+              "contentRef": "Mentoring session notes submitted to portal",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "9cca4c23-d6c6-452b-a51b-ef2424d01598",
+              "userId": "3950f239-e62f-4f16-811f-64e33b73139c",
+              "moduleId": "e06d589c-0ccf-4832-9f53-d9d9f0cd39dc",
+              "submittedAt": "2026-07-18T06:28:51.192Z",
+              "contentRef": "Submitted via Katalyst Konnect portal — ref #7823",
+              "status": "pending",
+              "teamId": null
+            },
+            {
+              "id": "046fc292-cff1-42c6-9ad3-00aa618f44cb",
+              "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+              "moduleId": "8f2b6b8f-52fb-4232-b5fb-c29208e6d546",
+              "submittedAt": "2026-07-18T06:28:52.783Z",
+              "contentRef": "https://notion.so/writeup/case-study",
+              "status": "pending",
+              "teamId": null
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 20,
+            "total": 60,
+            "totalPages": 3
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-004: Students forbidden from accessing review queue (403)",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:37.661Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/submissions",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 17,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Forbidden"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-005: POST /submissions/:id/ai-review generates AI draft summary",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:42.833Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/submissions/1a1680c4-d1af-420a-ac7b-66d7e32ace3d/ai-review",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {}
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 5172,
+        "json": {
+          "draftFeedback": "The student's submission consists solely of a URL pointing to a GitHub repository for a cloud-native capstone project. No additional text, commentary, or inline documentation was provided directly in the submission body. Reviewers will need to visit the linked repository to evaluate the student's code and project materials."
+        }
+      }
+    },
+    {
+      "group": "Group 4: Submissions & Autonomous AI Review (FR005, FR006, FR007, FR008, FR011-013)",
+      "name": "TC-SUB-006: Management awards XP and finalizes review with atomic transaction",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:44.569Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/submissions/1a1680c4-d1af-420a-ac7b-66d7e32ace3d/score",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {
+          "outcome": "approved",
+          "feedbackText": "Great architecture design and comprehensive test cases.",
+          "xpAwarded": 40
+        }
+      },
+      "response": {
+        "statusCode": 201,
+        "durationMs": 1734,
+        "json": {
+          "review": {
+            "id": "6b9339ec-b5c7-4dd2-97f8-f40c41230a54",
+            "submissionId": "1a1680c4-d1af-420a-ac7b-66d7e32ace3d",
+            "reviewerType": "management",
+            "reviewerId": "0d5580ad-51b9-4380-a6bd-7321feccb4c6",
+            "outcome": "approved",
+            "feedbackText": "Great architecture design and comprehensive test cases.",
+            "reviewedAt": "2026-08-21T10:40:43.392Z"
+          },
+          "xp": {
+            "id": "e5056fab-8353-4df4-90ed-d6e1b09377f8",
+            "submissionId": "1a1680c4-d1af-420a-ac7b-66d7e32ace3d",
+            "scoredBy": "management",
+            "xpAwarded": 40,
+            "individualComponent": null,
+            "teamComponent": null,
+            "createdAt": "2026-08-21T10:40:43.630Z"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 5: XP Ledger & Yearly Aggregations (FR008, FR009)",
+      "name": "TC-XP-001: Student views own total yearly XP for given year",
+      "passed": true,
+      "details": "Total XP: 870",
+      "executedAt": "2026-08-21T10:40:45.223Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/users/2779633f-f9b3-4ded-bcba-90c4dac1e847/xp?year=2026",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 653,
+        "json": {
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "year": 2026,
+          "totalXp": 870
+        }
+      }
+    },
+    {
+      "group": "Group 5: XP Ledger & Yearly Aggregations (FR008, FR009)",
+      "name": "TC-XP-002: Student views full audit ledger of XP history",
+      "passed": false,
+      "details": "Entries: undefined",
+      "executedAt": "2026-08-21T10:40:46.925Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/users/2779633f-f9b3-4ded-bcba-90c4dac1e847/xp/ledger",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 1701,
+        "json": {
+          "data": [
+            {
+              "id": "e5056fab-8353-4df4-90ed-d6e1b09377f8",
+              "submissionId": "1a1680c4-d1af-420a-ac7b-66d7e32ace3d",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T10:40:43.630Z"
+            },
+            {
+              "id": "9f0f58db-f6ea-4946-ac8c-c71b1e489f34",
+              "submissionId": "7de7497d-7d74-453f-b0d7-ff7e5d0d27bf",
+              "scoredBy": "ai_coach",
+              "xpAwarded": 10,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T10:40:30.220Z"
+            },
+            {
+              "id": "610b6918-6b60-4d7e-9b7a-098d516c42d4",
+              "submissionId": "34979364-0d64-4434-a19f-ebd7aeae6e92",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T10:22:02.450Z"
+            },
+            {
+              "id": "251a6da6-5e69-4c01-8b57-51e64611cd2f",
+              "submissionId": "0492e9c9-9b4c-42c9-8d99-d88a36070476",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T10:20:36.758Z"
+            },
+            {
+              "id": "1975e984-67e4-42d9-8494-d3855871adca",
+              "submissionId": "beb4072a-fd00-4ff3-809c-9ef7d9e20431",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T10:17:48.964Z"
+            },
+            {
+              "id": "a54ea48c-84d8-45a3-9724-2e705edd8983",
+              "submissionId": "3b81a77f-9f63-4ac3-9b40-84c6006fcd79",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T10:07:22.008Z"
+            },
+            {
+              "id": "c242e179-4afb-4959-8c3d-f71dbc671c9c",
+              "submissionId": "dcaec63a-fac3-4eac-b42e-6aa5dd9c01c0",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T10:00:15.566Z"
+            },
+            {
+              "id": "fbfd253d-96c0-49f9-a1a5-e69ee362a51c",
+              "submissionId": "46529615-7e2b-49d7-8c1c-1299fde3b90e",
+              "scoredBy": "ai_coach",
+              "xpAwarded": 10,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T10:00:08.100Z"
+            },
+            {
+              "id": "5b5998b0-bbb1-4b00-bb8f-8f8afcfdb4b5",
+              "submissionId": "6ca93868-47a7-4a72-8f63-66ac5cab9866",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T08:15:15.719Z"
+            },
+            {
+              "id": "93837b72-a470-478c-b142-dd524ccc66a2",
+              "submissionId": "a0b776a6-1333-4539-b947-084d15000af3",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T08:13:22.407Z"
+            },
+            {
+              "id": "9ebd9e5f-76a2-4c62-a8e6-12acc8300ac8",
+              "submissionId": "e3b874fc-7360-403f-9adf-264cf07bd1f2",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T07:59:47.426Z"
+            },
+            {
+              "id": "d67dbc5c-444d-45c4-8ce4-5759ae928de8",
+              "submissionId": "e6948ff9-778b-40f0-9ad9-2b63b943f49e",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T07:57:06.010Z"
+            },
+            {
+              "id": "b3962830-2959-4836-8dc1-3253d0614ea2",
+              "submissionId": "86cad6e7-9720-454f-9230-95033dc5efdc",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T07:52:13.322Z"
+            },
+            {
+              "id": "fc09336e-ce50-46b6-951f-c7b5447f9f95",
+              "submissionId": "106ba8b6-90c9-44b5-82e1-f4af1e391c9c",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T07:50:33.016Z"
+            },
+            {
+              "id": "8e30b19f-65bf-457f-9175-a08ccf7769fe",
+              "submissionId": "39895d28-1c3e-4543-986e-6ece123104e7",
+              "scoredBy": "ai_coach",
+              "xpAwarded": 10,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T07:50:22.342Z"
+            },
+            {
+              "id": "ce83b222-2ae5-47d8-9c18-0ff5e82fb47e",
+              "submissionId": "b3bf3c5e-7527-4980-a996-7b48ea9c6e98",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T07:48:11.206Z"
+            },
+            {
+              "id": "e37c9605-d841-4de6-94dc-6bfcc5116333",
+              "submissionId": "e08ed849-7aeb-477c-93ec-6920e0440600",
+              "scoredBy": "ai_coach",
+              "xpAwarded": 10,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T07:47:49.816Z"
+            },
+            {
+              "id": "3533f988-b2a8-4156-bd0e-fb438f963ff8",
+              "submissionId": "6f43222b-e4e7-42dd-b882-c595630570cb",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T07:45:34.225Z"
+            },
+            {
+              "id": "9226f351-6a9c-4246-ab71-c1e1c81115c6",
+              "submissionId": "d72b57d3-ef72-497c-876a-93f7ee30dbe9",
+              "scoredBy": "ai_coach",
+              "xpAwarded": 10,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T07:45:03.628Z"
+            },
+            {
+              "id": "31d3ca61-d2e7-4297-b309-4d1139c208c5",
+              "submissionId": "2ae56437-a030-466a-880c-9c4e2c56b878",
+              "scoredBy": "management",
+              "xpAwarded": 40,
+              "individualComponent": null,
+              "teamComponent": null,
+              "createdAt": "2026-08-21T07:39:08.220Z"
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 20,
+            "total": 30,
+            "totalPages": 2
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 5: XP Ledger & Yearly Aggregations (FR008, FR009)",
+      "name": "TC-XP-003: Katalyst Management can view any student XP",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:47.125Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/users/2779633f-f9b3-4ded-bcba-90c4dac1e847/xp?year=2026",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 198,
+        "json": {
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+          "year": 2026,
+          "totalXp": 870
+        }
+      }
+    },
+    {
+      "group": "Group 5: XP Ledger & Yearly Aggregations (FR008, FR009)",
+      "name": "TC-XP-004: Student attempting to view another user XP gets 403 Forbidden",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:47.133Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/users/00000000-0000-0000-0000-000000000000/xp",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 8,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Forbidden"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 6: Filtered Reports (FR010)",
+      "name": "TC-REP-001: Management generates reports filtered by moduleType",
+      "passed": false,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:51.334Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/reports?moduleType=project",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 4198,
+        "json": {
+          "data": [
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:40:43.630Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:22:02.450Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:20:36.758Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:17:48.964Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:07:22.008Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:00:15.566Z"
+            },
+            {
+              "userId": "c1944071-7e9c-4f06-b6d6-791e200e45f6",
+              "moduleType": "project",
+              "xpAwarded": 120,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:00:04.393Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T08:15:15.719Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T08:13:22.407Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:59:47.426Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:57:06.010Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:52:13.322Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:50:33.016Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:48:11.206Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:45:34.225Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:39:08.220Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:13:35.720Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:06:28.158Z"
+            },
+            {
+              "userId": "6a080326-3041-4f6f-a52c-690f65934d2e",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-20T06:28:42.262Z"
+            },
+            {
+              "userId": "5c583998-f971-4a97-a560-9da38bf6e70c",
+              "moduleType": "project",
+              "xpAwarded": 39,
+              "scoredBy": "management",
+              "createdAt": "2026-08-19T06:28:53.905Z"
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 20,
+            "total": 36,
+            "totalPages": 2
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 6: Filtered Reports (FR010)",
+      "name": "TC-REP-002: Management generates reports filtered by student userId",
+      "passed": false,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:55.475Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/reports?userId=2779633f-f9b3-4ded-bcba-90c4dac1e847",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 4140,
+        "json": {
+          "data": [
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:40:43.630Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "session",
+              "xpAwarded": 10,
+              "scoredBy": "ai_coach",
+              "createdAt": "2026-08-21T10:40:30.220Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:22:02.450Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:20:36.758Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:17:48.964Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:07:22.008Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:00:15.566Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "session",
+              "xpAwarded": 10,
+              "scoredBy": "ai_coach",
+              "createdAt": "2026-08-21T10:00:08.100Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T08:15:15.719Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T08:13:22.407Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:59:47.426Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:57:06.010Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:52:13.322Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:50:33.016Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "session",
+              "xpAwarded": 10,
+              "scoredBy": "ai_coach",
+              "createdAt": "2026-08-21T07:50:22.342Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:48:11.206Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "session",
+              "xpAwarded": 10,
+              "scoredBy": "ai_coach",
+              "createdAt": "2026-08-21T07:47:49.816Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:45:34.225Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "session",
+              "xpAwarded": 10,
+              "scoredBy": "ai_coach",
+              "createdAt": "2026-08-21T07:45:03.628Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:39:08.220Z"
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 20,
+            "total": 30,
+            "totalPages": 2
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 6: Filtered Reports (FR010)",
+      "name": "TC-REP-003: Management generates reports filtered by date range",
+      "passed": false,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:57.814Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/reports?dateFrom=2026-07-22T10:40:55.476Z&dateTo=2026-08-21T10:40:55.476Z",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 2337,
+        "json": {
+          "data": [
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:40:43.630Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "session",
+              "xpAwarded": 10,
+              "scoredBy": "ai_coach",
+              "createdAt": "2026-08-21T10:40:30.220Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:22:02.450Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:20:36.758Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:17:48.964Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:07:22.008Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:00:15.566Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "session",
+              "xpAwarded": 10,
+              "scoredBy": "ai_coach",
+              "createdAt": "2026-08-21T10:00:08.100Z"
+            },
+            {
+              "userId": "c1944071-7e9c-4f06-b6d6-791e200e45f6",
+              "moduleType": "project",
+              "xpAwarded": 120,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T10:00:04.393Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T08:15:15.719Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T08:13:22.407Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:59:47.426Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:57:06.010Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:52:13.322Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:50:33.016Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "session",
+              "xpAwarded": 10,
+              "scoredBy": "ai_coach",
+              "createdAt": "2026-08-21T07:50:22.342Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:48:11.206Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "session",
+              "xpAwarded": 10,
+              "scoredBy": "ai_coach",
+              "createdAt": "2026-08-21T07:47:49.816Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "project",
+              "xpAwarded": 40,
+              "scoredBy": "management",
+              "createdAt": "2026-08-21T07:45:34.225Z"
+            },
+            {
+              "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847",
+              "moduleType": "session",
+              "xpAwarded": 10,
+              "scoredBy": "ai_coach",
+              "createdAt": "2026-08-21T07:45:03.628Z"
+            }
+          ],
+          "pagination": {
+            "page": 1,
+            "limit": 20,
+            "total": 90,
+            "totalPages": 5
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 6: Filtered Reports (FR010)",
+      "name": "TC-REP-004: Student attempting GET /reports receives 403 Forbidden",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:40:57.821Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/reports",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 6,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Forbidden"
+          }
+        }
+      }
+    },
+    {
+      "group": "Group 7: AI Coach Services (FR014, FR025, FR026)",
+      "name": "TC-AIC-001: POST /ai-coach/nudge generates personalized motivational nudge",
+      "passed": false,
+      "details": "Generated",
+      "executedAt": "2026-08-21T10:40:59.023Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/ai-coach/nudge",
+        "auth": "Bearer (Katalyst Management / Admin)",
+        "body": {
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847"
+        }
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 1200,
+        "json": {
+          "message": null,
+          "alreadySent": true,
+          "lastSentAt": "2026-08-21T10:00:45.557Z"
+        }
+      }
+    },
+    {
+      "group": "Group 7: AI Coach Services (FR014, FR025, FR026)",
+      "name": "TC-AIC-002: GET /users/:id/progress-updates generates natural-language summary",
+      "passed": true,
+      "details": "Preview: \"Here is a short progress summary for Aarav Sh...\"",
+      "executedAt": "2026-08-21T10:41:15.411Z",
+      "request": {
+        "type": "GET",
+        "endpoint": "/users/2779633f-f9b3-4ded-bcba-90c4dac1e847/progress-updates",
+        "auth": "Bearer (Student)",
+        "body": null
+      },
+      "response": {
+        "statusCode": 200,
+        "durationMs": 16388,
+        "json": {
+          "update": "Here is a short progress summary for Aarav Sharma:\n\nIn 2026, Aarav Sharma has earned a total of **870 XP**, demonstrating steady progress and consistent effort. Keep up the great work!"
+        }
+      }
+    },
+    {
+      "group": "Group 7: AI Coach Services (FR014, FR025, FR026)",
+      "name": "TC-AIC-003: Students forbidden from triggering batch nudges (403)",
+      "passed": true,
+      "details": "",
+      "executedAt": "2026-08-21T10:41:15.415Z",
+      "request": {
+        "type": "POST",
+        "endpoint": "/ai-coach/nudge",
+        "auth": "Bearer (Student)",
+        "body": {
+          "userId": "2779633f-f9b3-4ded-bcba-90c4dac1e847"
+        }
+      },
+      "response": {
+        "statusCode": 403,
+        "durationMs": 4,
+        "json": {
+          "success": false,
+          "error": {
+            "message": "Forbidden"
+          }
+        }
+      }
+    }
+  ]
+}

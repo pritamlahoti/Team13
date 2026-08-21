@@ -1,6 +1,4 @@
-//sakshi Nagare
 const xpRepo = require('./xp.repo');
-const { parsePagination, parseSort } = require('../admin/admin.utils');
 
 const BASE_XP = {
   session: 10,
@@ -48,22 +46,7 @@ const awardSubmissionXp = async (submissionId, moduleType, score, submittedAt, d
 const getYearlyXp = (userId, year = new Date().getFullYear()) =>
   xpRepo.sumForUserYear(userId, year).then((totalXp) => ({ userId, year, totalXp }));
 
-const getLedger = (userId, query = {}) => {
-  const { skip, take, page, limit } = parsePagination(query);
-  const orderBy = parseSort(query, ['createdAt', 'xpAwarded'], 'createdAt', 'desc');
-  
-  const where = {};
-  if (query.scoredBy) where.scoredBy = query.scoredBy;
-  if (query.from || query.to) {
-    where.createdAt = {};
-    if (query.from) where.createdAt.gte = new Date(query.from);
-    if (query.to) where.createdAt.lte = new Date(query.to);
-  }
-
-  return xpRepo.listForUser(userId, where, orderBy, skip, take).then(result => ({
-    ...result,
-    page, limit
-  }));
-};
+const getLedger = (userId, pagination) => xpRepo.listForUser(userId, pagination);
 
 module.exports = { calculateXp, awardSubmissionXp, getYearlyXp, getLedger };
+

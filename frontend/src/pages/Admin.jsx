@@ -9,69 +9,100 @@ import {
   ChevronDown,
   User,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  PlusCircle,
+  TrendingUp,
+  AlertTriangle
 } from 'lucide-react';
-import { authService } from '../services/authService';
+import { adminService } from '../services/adminService';
 import { useAuth } from '../hooks/useAuth';
-import { learningService } from '../services/learningService';
+import ProfileCard from '../components/profile/ProfileCard';
 
 export default function Admin() {
   const { user } = useAuth();
-  const [auditLogs, setAuditLogs] = useState([]);
   const [usersList, setUsersList] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
   const [toast, setToast] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [analytics, setAnalytics] = useState(null);
+  const [atRiskStudents, setAtRiskStudents] = useState([]);
+  const [showCreateUser, setShowCreateUser] = useState(false);
+  const [newUserForm, setNewUserForm] = useState({
+    name: '', email: '', password: '', role: 'student', cohortYear: new Date().getFullYear()
+  });
+  const [creatingUser, setCreatingUser] = useState(false);
 
-  // Fetch users and audit logs on mount
+  // Fetch all admin data on mount
   useEffect(() => {
     let active = true;
     async function init() {
       try {
-        const users = await authService.getUsers();
-        const subs = await learningService.getSubmissions();
+        const [students, mentors, analyticsData, atRisk] = await Promise.allSettled([
+          adminService.getStudents(),
+          adminService.getMentors(),
+          adminService.getAnalytics(),
+          adminService.getAtRiskStudents(),
+        ]);
         if (active) {
-          setUsersList(users);
-          setAuditLogs(subs.filter(s => s.status === 'reviewed'));
+          const allStudents = students.status === 'fulfilled' ? students.value : [];
+          const allMentors = mentors.status === 'fulfilled' ? mentors.value : [];
+          setUsersList([...allStudents, ...allMentors]);
+          if (analyticsData.status === 'fulfilled') setAnalytics(analyticsData.value);
+          if (atRisk.status === 'fulfilled') setAtRiskStudents(atRisk.value);
           setLoading(false);
         }
       } catch (err) {
         console.error('Admin init failed', err);
-        if (active) {
-          setLoading(false);
-        }
+        if (active) setLoading(false);
       }
     }
     init();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
 
   const handleAssignMentor = async (studentId, mentorId) => {
     try {
-      await authService.assignMentor(studentId, mentorId);
+      await adminService.assignMentor(studentId, mentorId);
       
-      // Update local state to reflect change immediately
-      const updatedData = await authService.getUsers();
-      setUsersList(updatedData);
-      
-      // Show success toast
+      // Refresh student list to reflect changes
+      const [students, mentors] = await Promise.all([
+        adminService.getStudents(),
+        adminService.getMentors(),
+      ]);
+      setUsersList([...students, ...mentors]);
+
       const student = usersList.find(u => u.id === studentId);
       const mentor = usersList.find(u => u.id === mentorId);
-      
       showToast({
         type: 'success',
-        message: mentor 
+        message: mentor
           ? `Assigned ${mentor.name} as mentor for ${student?.name || 'student'}.`
-          : `Removed mentor assignment for ${student?.name || 'student'}.`
+          : `Removed mentor assignment for ${student?.name || 'student'}.`,
       });
     } catch {
-      showToast({
-        type: 'error',
-        message: 'Failed to assign mentor. Please try again.'
-      });
+      showToast({ type: 'error', message: 'Failed to assign mentor. Please try again.' });
+    }
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    setCreatingUser(true);
+    try {
+      await adminService.createUser(newUserForm);
+      showToast({ type: 'success', message: `User ${newUserForm.name} created successfully.` });
+      setShowCreateUser(false);
+      setNewUserForm({ name: '', email: '', password: '', role: 'student', cohortYear: new Date().getFullYear() });
+      // Refresh user list
+      const [students, mentors] = await Promise.all([
+        adminService.getStudents(),
+        adminService.getMentors(),
+      ]);
+      setUsersList([...students, ...mentors]);
+    } catch (err) {
+      showToast({ type: 'error', message: err.message || 'Failed to create user.' });
+    } finally {
+      setCreatingUser(false);
     }
   };
 
@@ -86,6 +117,9 @@ export default function Admin() {
   const mentors = usersList.filter(u => u.role === 'KATALYST_MANAGEMENT' || u.role === 'HIGHER_MANAGEMENT');
   const students = usersList.filter(u => u.role === 'STUDENT');
   const unassignedStudents = students.filter(s => !s.mentor);
+  // Audit log will be populated once the backend /api/admin/reports endpoint
+  // returns scored-submission history. Empty for now.
+  const auditLogs = [];
 
   // Search & Filtered List
   const filteredUsers = usersList.filter(u => {
@@ -151,7 +185,72 @@ export default function Admin() {
             Oversee explorer accounts, audit standings, and pair students with program mentors.
           </p>
         </div>
+        <div className="flex flex-col items-end gap-3">
+          {/* Compact profile of the logged-in director */}
+          <ProfileCard compact className="w-64" />
+          <button
+            onClick={() => setShowCreateUser(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-theme-plum text-white rounded-xl font-bold text-sm font-sans hover:bg-theme-berry transition-colors cursor-pointer shadow-sm"
+          >
+            <PlusCircle className="w-4 h-4" />
+            Provision User
+          </button>
+        </div>
       </div>
+
+      {/* Live Analytics Metrics */}
+      {analytics && (
+        <div className="grid grid-cols-3 gap-4">
+          <div className="glass-panel p-4 rounded-2xl flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-sans">Participation</p>
+              <h3 className="font-display font-black text-xl text-theme-plum">
+                {Math.round((analytics.participation ?? 0) * 100)}%
+              </h3>
+            </div>
+          </div>
+          <div className="glass-panel p-4 rounded-2xl flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center">
+              <Users className="w-4 h-4 text-sky-600" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-sans">Completion</p>
+              <h3 className="font-display font-black text-xl text-theme-plum">
+                {Math.round((analytics.completion ?? 0) * 100)}%
+              </h3>
+            </div>
+          </div>
+          <div className="glass-panel p-4 rounded-2xl flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-violet-600" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider font-sans">Engagement</p>
+              <h3 className="font-display font-black text-xl text-theme-plum">
+                {Math.round((analytics.monthlyEngagement ?? 0) * 100)}%
+              </h3>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* At-Risk Students Alert */}
+      {atRiskStudents.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-bold text-amber-800 font-sans">
+              {atRiskStudents.length} student{atRiskStudents.length !== 1 ? 's' : ''} flagged as at risk
+            </p>
+            <p className="text-xs text-amber-700 font-sans mt-0.5">
+              {atRiskStudents.map(s => s.name).join(', ')} — consider assigning a mentor or sending a nudge.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Stats Board */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -414,6 +513,94 @@ export default function Admin() {
           )}
         </div>
       </div>
+
+      {/* Create User Modal */}
+      {showCreateUser && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display font-black text-xl text-theme-plum">Provision New User</h2>
+              <button onClick={() => setShowCreateUser(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer text-xl">&times;</button>
+            </div>
+            <form onSubmit={handleCreateUser} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 font-sans uppercase tracking-wider">Full Name</label>
+                <input
+                  required
+                  type="text"
+                  value={newUserForm.name}
+                  onChange={e => setNewUserForm(f => ({ ...f, name: e.target.value }))}
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm font-sans focus:outline-none focus:border-theme-berry"
+                  placeholder="Priya Iyer"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 font-sans uppercase tracking-wider">Email Address</label>
+                <input
+                  required
+                  type="email"
+                  value={newUserForm.email}
+                  onChange={e => setNewUserForm(f => ({ ...f, email: e.target.value }))}
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm font-sans focus:outline-none focus:border-theme-berry"
+                  placeholder="priya@questacademy.org"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-600 font-sans uppercase tracking-wider">Temporary Password</label>
+                <input
+                  required
+                  type="password"
+                  value={newUserForm.password}
+                  onChange={e => setNewUserForm(f => ({ ...f, password: e.target.value }))}
+                  className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm font-sans focus:outline-none focus:border-theme-berry"
+                  placeholder="••••••••"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 font-sans uppercase tracking-wider">Role</label>
+                  <select
+                    value={newUserForm.role}
+                    onChange={e => setNewUserForm(f => ({ ...f, role: e.target.value }))}
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm font-sans focus:outline-none focus:border-theme-berry bg-white"
+                  >
+                    <option value="student">Student</option>
+                    <option value="katalyst_management">Mentor</option>
+                    <option value="higher_management">Director</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-600 font-sans uppercase tracking-wider">Cohort Year</label>
+                  <input
+                    type="number"
+                    value={newUserForm.cohortYear}
+                    onChange={e => setNewUserForm(f => ({ ...f, cohortYear: parseInt(e.target.value) }))}
+                    className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm font-sans focus:outline-none focus:border-theme-berry"
+                    min={2020}
+                    max={2030}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateUser(false)}
+                  className="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer font-sans"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingUser}
+                  className="flex-1 px-4 py-2.5 bg-theme-plum text-white rounded-xl text-sm font-bold font-sans hover:bg-theme-berry transition-colors cursor-pointer disabled:opacity-60"
+                >
+                  {creatingUser ? 'Creating…' : 'Create User'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

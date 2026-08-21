@@ -12,7 +12,9 @@ import {
   User,
   MessageSquare,
   ShieldCheck,
-  ClipboardList
+  ClipboardList,
+  UsersRound,
+  LineChart
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { gamificationService } from '../../services/gamificationService';
@@ -55,10 +57,12 @@ export default function Sidebar({ onOpenCoach }) {
   } else if (user?.role === 'KATALYST_MANAGEMENT') {
     menuItems.push(
       { to: '/mentor-dashboard', label: 'Mentor Console', icon: ClipboardList },
+      { to: '/teams', label: 'Teams', icon: UsersRound },
       { to: '/leaderboard', label: 'Leaderboard', icon: Trophy }
     );
   } else if (user?.role === 'HIGHER_MANAGEMENT') {
     menuItems.push(
+      { to: '/oversight', label: 'Oversight', icon: LineChart },
       { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
       { to: '/admin', label: 'Admin Console', icon: ShieldCheck }
     );

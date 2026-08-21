@@ -23,6 +23,7 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { learningService } from '../services/learningService';
 import { gamificationService } from '../services/gamificationService';
+import ProfileCard from '../components/profile/ProfileCard';
 
 const HERO_IMAGE = "/manus-storage/katalyst-hero-campus_fa6d5ff3.jpg";
 const COACH_IMAGE = "/manus-storage/katalyst-coach-orbit_efa784b0.png";
@@ -50,26 +51,48 @@ export default function Dashboard() {
     async function loadDashboardData() {
       if (!user?.id) return;
       try {
-        const [fetchedXp, fetchedQuests] = await Promise.all([
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+        const token = localStorage.getItem('token');
+
+        // Fetch student dashboard, XP, and modules in parallel
+        const [dashRes, fetchedXp, fetchedQuests] = await Promise.allSettled([
+          fetch(`${API_URL}/dashboard/student/${user.id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }).then(r => r.ok ? r.json() : null),
           gamificationService.getXp(user.id),
-          learningService.getModules()
+          learningService.getModules(),
         ]);
-        setXp(fetchedXp || 1380);
-        
-        // Match active quests
-        if (fetchedQuests && fetchedQuests.length > 0) {
-          setQuests(fetchedQuests.map(q => ({
+
+        // Apply real dashboard data (streak, XP) if backend responded
+        const dashData = dashRes.status === 'fulfilled' ? dashRes.value : null;
+        if (dashData) {
+          // Backend returns totalXp and enrollments; derive streak from submissions
+          setXp(dashData.totalXp ?? fetchedXp.value ?? 1380);
+          // Streak = number of distinct days in the last N days with a submission
+          const submittedDates = (dashData.recentSubmissions ?? [])
+            .map(s => new Date(s.submittedAt).toDateString());
+          const uniqueDays = new Set(submittedDates);
+          setStreak(uniqueDays.size || 0);
+        } else {
+          // Fallback: use gamificationService XP (has its own mock)
+          setXp(fetchedXp.status === 'fulfilled' ? (fetchedXp.value || 1380) : 1380);
+          // Keep streak at last known value (default 5 for demo)
+        }
+
+        // Apply quests/modules
+        const modules = fetchedQuests.status === 'fulfilled' ? fetchedQuests.value : null;
+        if (modules && modules.length > 0) {
+          setQuests(modules.map(q => ({
             ...q,
             progress: q.progress ?? 0,
             tint: q.tint || 'cyan',
-            done: q.status === 'completed'
+            done: q.status === 'completed',
           })));
         } else {
-          // Fallback to MOCK
           setQuests([
             { id: "ai-bootcamp", title: "AI Fundamentals Bootcamp", description: "Finish module 3 and connect the core concepts.", reward: 100, progress: 72, category: "Core skill", tint: "cyan", due: "Due today", done: false },
             { id: "project-scope", title: "Shape your project scope", description: "Turn your idea into a concise one-page brief.", reward: 150, progress: 0, category: "Project", tint: "coral", due: "Due Fri, 5 PM", done: false },
-            { id: "mentor-session", title: "Mentor checkpoint", description: "Prepare one question for your coaching session.", reward: 75, progress: 50, category: "Mentoring", tint: "violet", due: "Tomorrow", done: false }
+            { id: "mentor-session", title: "Mentor checkpoint", description: "Prepare one question for your coaching session.", reward: 75, progress: 50, category: "Mentoring", tint: "violet", due: "Tomorrow", done: false },
           ]);
         }
       } catch (err) {
@@ -163,6 +186,9 @@ export default function Dashboard() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Compact Profile Card — click to open dropdown */}
+          <ProfileCard compact />
         </div>
       </header>
 

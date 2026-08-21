@@ -1,13 +1,15 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 export const authService = {
+  /**
+   * POST /auth/login
+   * Authenticates a user and returns { user, token }.
+   */
   login: async (email, password) => {
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
@@ -24,12 +26,13 @@ export const authService = {
       data.user.role = data.user.role.toUpperCase();
       return data;
     } catch (err) {
-      console.warn('Backend connection failed, using mock auth fallback', err);
-      // Fallback credentials for testing/demoing
+      console.warn('[authService] Backend connection failed, using mock auth fallback', err);
+
+      // Mock fallback credentials for offline / demo use
       if (email === 'admin@questacademy.org' && password === 'admin123') {
         return {
-          user: { id: 'admin-id', name: 'Zack Chen', email, role: 'KATALYST_MANAGEMENT' },
-          token: 'mock-jwt-token-for-admin',
+          user: { id: 'admin-1', name: 'Zack Chen', email, role: 'KATALYST_MANAGEMENT' },
+          token: 'mock-jwt-token-for-mentor',
         };
       }
       if (email === 'student@questacademy.org' && password === 'student123') {
@@ -48,32 +51,63 @@ export const authService = {
     }
   },
 
-  getUsers: async () => {
+  /**
+   * GET /auth/me
+   * Validates the stored JWT and returns the current user's profile.
+   * Used by AuthContext on app load to restore sessions.
+   */
+  me: async () => {
+    const token = localStorage.getItem('token');
+    if (!token || token.startsWith('mock-')) {
+      // Mock tokens are not real JWTs — restore user from localStorage directly
+      const stored = localStorage.getItem('user');
+      try { return stored ? JSON.parse(stored) : null; } catch { return null; }
+    }
+
     try {
-      const token = localStorage.getItem('token');
-      const headers = { 'Authorization': `Bearer ${token}` };
+      const response = await fetch(`${API_URL}/auth/me`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!response.ok) return null;
+      return await response.json();
+    } catch (err) {
+      console.warn('[authService] /auth/me failed — using cached user', err);
+      const stored = localStorage.getItem('user');
+      try { return stored ? JSON.parse(stored) : null; } catch { return null; }
+    }
+  },
+
+  /**
+   * GET /api/admin/students + /api/admin/mentors
+   * Returns all users merged. Falls back to localStorage mock.
+   * NOTE: Previously incorrectly called /users (non-existent endpoint).
+   */
+  getUsers: async () => {
+    const token = localStorage.getItem('token');
+    const headers = { 'Authorization': `Bearer ${token}` };
+
+    try {
       const [studentsRes, mentorsRes] = await Promise.all([
-        fetch(`${API_URL}/api/admin/students?limit=100`, { headers }),
-        fetch(`${API_URL}/api/admin/mentors?limit=100`, { headers })
+        fetch(`${API_URL}/api/admin/students`, { headers }),
+        fetch(`${API_URL}/api/admin/mentors`, { headers }),
       ]);
+
       if (studentsRes.ok && mentorsRes.ok) {
-        const { data: students } = await studentsRes.json();
-        const { data: mentors } = await mentorsRes.json();
-        return [
-          ...students.map(s => ({ ...s, role: 'STUDENT', mentor: null })),
-          ...mentors.map(m => ({ ...m, role: 'KATALYST_MANAGEMENT' }))
-        ];
+        const studentsJson = await studentsRes.json();
+        const mentorsJson = await mentorsRes.json();
+        // Normalise — backend may return { data: [...] } or plain array
+        const students = Array.isArray(studentsJson) ? studentsJson : (studentsJson.data ?? []);
+        const mentors = Array.isArray(mentorsJson) ? mentorsJson : (mentorsJson.data ?? []);
+        return [...students, ...mentors];
       }
     } catch (err) {
-      console.warn('Backend fetch failed, returning mock users database', err);
+      console.warn('[authService] getUsers backend fetch failed, using localStorage mock', err);
     }
-    
-    // In-memory / localStorage simulation for full interactive experience
+
+    // In-memory / localStorage simulation for offline demo
     const stored = localStorage.getItem('mock_users_db');
-    if (stored) {
-      return JSON.parse(stored);
-    }
-    
+    if (stored) return JSON.parse(stored);
+
     const initialUsers = [
       { id: 'student-id', name: 'Alex Explorer', email: 'student@questacademy.org', role: 'STUDENT', cohortYear: 2026, mentor: { id: 'admin-1', name: 'Zack Chen' } },
       { id: 'student-2', name: 'Kabir Shah', email: 'kabir@questacademy.org', role: 'STUDENT', cohortYear: 2026, mentor: null },
@@ -87,27 +121,42 @@ export const authService = {
     localStorage.setItem('mock_users_db', JSON.stringify(initialUsers));
     return initialUsers;
   },
-  
-  // The User model has no mentor relation and PUT /users/:id/mentor doesn't
-  // exist server-side yet (backend admin.routes.js flags this as needing a
-  // schema change) — this always runs the local simulation below.
+
+  /**
+   * Assigns a mentor to a student.
+   * NOTE: POST /api/admin/mentor-assignments is not yet live on the backend
+   * (requires a schema migration). Falls back to localStorage update.
+   */
   assignMentor: async (studentId, mentorId) => {
-    // Update frontend simulation
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`${API_URL}/api/admin/mentor-assignments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ studentId, mentorId }),
+      });
+      if (response.ok) return await response.json();
+    } catch (err) {
+      console.warn('[authService] assignMentor — endpoint not yet live, updating local mock DB', err);
+    }
+
+    // Offline: update mock database in localStorage
     const stored = localStorage.getItem('mock_users_db');
     if (stored) {
       const users = JSON.parse(stored);
-      const mentors = users.filter(u => u.role === 'KATALYST_MANAGEMENT' || u.role === 'HIGHER_MANAGEMENT');
-      const selectedMentor = mentors.find(m => m.id === mentorId) || null;
-      
+      const mentor = users.find(u => u.id === mentorId) ?? null;
       const updated = users.map(user => {
         if (user.id === studentId) {
-          return { ...user, mentor: selectedMentor };
+          return { ...user, mentor: mentor ? { id: mentor.id, name: mentor.name } : null };
         }
         return user;
       });
       localStorage.setItem('mock_users_db', JSON.stringify(updated));
     }
-    
+
     return { success: true, studentId, mentorId };
-  }
+  },
 };

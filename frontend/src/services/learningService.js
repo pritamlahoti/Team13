@@ -264,63 +264,113 @@ export const learningService = {
     return JSON.parse(localStorage.getItem('mock_submissions_db') || '[]');
   },
 
-  // POST /submissions/:id/score is the real scoring path (records the review
-  // and awards XP). /submissions/:id/ai-review is a different endpoint that
-  // only drafts AI feedback text without scoring anything.
+  /**
+   * POST /submissions/:id/score  (KATALYST_MANAGEMENT only)
+   * Submits the final review outcome, feedback text, and XP award.
+   * Previously incorrectly called /submissions/:id/ai-review.
+   * outcome defaults to 'approved'; MentorDashboard's handleReviewSubmit
+   * already accepts an outcome argument, so the param is kept for that.
+   */
   reviewSubmission: async (submissionId, feedbackText, xpAwarded, outcome = 'approved') => {
     try {
       return await api.request(`/submissions/${submissionId}/score`, {
         method: 'POST',
-        body: JSON.stringify({ outcome, feedbackText, xpAwarded })
+        body: JSON.stringify({
+          outcome,
+          feedbackText,
+          xpAwarded: parseInt(xpAwarded) || 100,
+        }),
       });
     } catch (err) {
-      console.warn('Backend connection failed, performing simulated submission review', err);
+      console.warn('[learningService] reviewSubmission backend failed, updating local mock', err);
     }
 
-    // Process review in localStorage
+    // Offline: update localStorage mock
     const submissions = JSON.parse(localStorage.getItem('mock_submissions_db') || '[]');
     const subIndex = submissions.findIndex(s => s.id === submissionId);
     if (subIndex === -1) return { success: false };
 
     const submission = submissions[subIndex];
-    submission.status = 'reviewed';
+    submission.status = 'scored';
     submission.feedbackText = feedbackText;
     submission.xpAwarded = parseInt(xpAwarded) || 100;
-    
     localStorage.setItem('mock_submissions_db', JSON.stringify(submissions));
 
-    // Award XP via XP ledger
+    // Award XP in local ledger
     const ledger = JSON.parse(localStorage.getItem('mock_xp_ledger_db') || '[]');
     ledger.push({
       id: `xp-${Date.now()}`,
       userId: submission.userId,
       scored_by: 'management',
       xp_awarded: submission.xpAwarded,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     });
     localStorage.setItem('mock_xp_ledger_db', JSON.stringify(ledger));
 
-    // Also update module status on mock_quests_db to complete if not already
+    // Mark module complete in quests mock
     const quests = JSON.parse(localStorage.getItem('mock_quests_db') || '[]');
-    const updatedQuests = quests.map(q => {
-      if (q.id === submission.moduleId) {
-        return { ...q, done: true, progress: 100 };
-      }
-      return q;
-    });
+    const updatedQuests = quests.map(q =>
+      q.id === submission.moduleId ? { ...q, done: true, progress: 100 } : q
+    );
     localStorage.setItem('mock_quests_db', JSON.stringify(updatedQuests));
 
     return { success: true, submission };
   },
 
-  draftAiFeedback: async (submissionId) => {
-    const { draftFeedback } = await api.request(`/submissions/${submissionId}/ai-review`, {
-      method: 'POST'
-    });
-    return draftFeedback;
+  /**
+   * POST /submissions/:id/ai-review  (KATALYST_MANAGEMENT only)
+   * Asks the AI Coach to draft feedback for a submission. Returns a draft
+   * only — does NOT score or close the submission.
+   */
+  getAiDraftFeedback: async (submissionId) => {
+    try {
+      const data = await api.request(`/submissions/${submissionId}/ai-review`, {
+        method: 'POST',
+        body: JSON.stringify({}),
+      });
+      return data.draftFeedback ?? null;
+    } catch (err) {
+      console.warn('[learningService] getAiDraftFeedback backend failed, returning null', err);
+      return null;
+    }
   },
 
+  /**
+   * PATCH /submissions/:id/team
+   * Tags a submission as belonging to a team.
+   */
+  assignTeam: async (submissionId, teamId) => {
+    try {
+      return await api.request(`/submissions/${submissionId}/team`, {
+        method: 'PATCH',
+        body: JSON.stringify({ teamId }),
+      });
+    } catch (err) {
+      console.warn('[learningService] assignTeam backend failed', err);
+      return { success: false };
+    }
+  },
+
+  /**
+   * POST /submissions/video-upload-token
+   * Step 1 of video submission: obtain a Vercel Blob client token.
+   * After receiving this token, upload the video directly to Blob storage,
+   * then call submitWork() with the resulting blob URL as contentRef.
+   */
+  getVideoUploadToken: async () => {
+    try {
+      return await api.request('/submissions/video-upload-token', { method: 'POST' });
+    } catch (err) {
+      console.warn('[learningService] getVideoUploadToken backend failed', err);
+      throw new Error('Video upload is unavailable while offline.', { cause: err });
+    }
+  },
+
+  /**
+   * Returns the student's learning journey nodes.
+   * Currently backed by local mock — no backend route exists yet.
+   */
   getJourneyNodes: async () => {
     return MOCK_JOURNEY;
-  }
+  },
 };
