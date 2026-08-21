@@ -1,6 +1,10 @@
 // Single choke point for all Gemini calls (backend PRD section 4.4) — retry/
 // timeout/error-handling lives here once instead of duplicated per route.
-const MODEL = 'gemini-2.0-flash';
+// gemini-2.0-flash and gemini-2.5-flash are both retired for this API key.
+// gemini-3.6-flash (Google's suggested replacement) is a thinking model and
+// blew the 9s timeout on simple feedback text; flash-lite has no thinking
+// step and responds in under 2s, which fits this route's latency budget.
+const MODEL = 'gemini-3.1-flash-lite';
 const TIMEOUT_MS = 9000;
 
 async function generateText(prompt) {
