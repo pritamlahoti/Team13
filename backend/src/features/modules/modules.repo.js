@@ -1,4 +1,5 @@
 const prisma = require('../../config/prisma');
+const { paginate } = require('../../utils/pagination');
 
 const create = ({ type, classification, scoringMode, dueDate, createdBy }) =>
   prisma.module.create({
@@ -7,6 +8,16 @@ const create = ({ type, classification, scoringMode, dueDate, createdBy }) =>
 
 const findById = (id) => prisma.module.findUnique({ where: { id } });
 
-const list = () => prisma.module.findMany({ orderBy: { createdAt: 'desc' } });
+const list = ({ page, limit }) =>
+  prisma
+    .$transaction([
+      prisma.module.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.module.count(),
+    ])
+    .then((result) => paginate({ page, limit }, result));
 
 module.exports = { create, findById, list };

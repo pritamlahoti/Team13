@@ -1,4 +1,7 @@
 const { z } = require('zod');
+const { paginationQuerySchema } = require('../../utils/pagination');
+
+const listModulesQuerySchema = paginationQuerySchema;
 
 const createModuleSchema = z
   .object({
@@ -12,4 +15,4 @@ const createModuleSchema = z
     path: ['dueDate'],
   });
 
-module.exports = { createModuleSchema };
+module.exports = { createModuleSchema, listModulesQuerySchema };

@@ -4,6 +4,6 @@ const modulesRepo = require('./modules.repo');
 // modules.schema.js — this is a pure pass-through to the repo.
 const createModule = (data) => modulesRepo.create(data);
 const getModule = (id) => modulesRepo.findById(id);
-const listModules = () => modulesRepo.list();
+const listModules = (pagination) => modulesRepo.list(pagination);
 
 module.exports = { createModule, getModule, listModules };
