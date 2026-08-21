@@ -3,6 +3,9 @@ import { useEffect } from 'react';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 
+// Layout
+import AppLayout from '../components/layout/AppLayout';
+
 // Pages
 import Home from '../pages/Home';
 import About from '../pages/About';
@@ -42,16 +45,18 @@ export default function AppRoutes() {
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
         
         {/* Protected Routes */}
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-        <Route path="/learning" element={<ProtectedRoute><Learning /></ProtectedRoute>} />
-        <Route path="/learning-path" element={<ProtectedRoute><LearningPath /></ProtectedRoute>} />
-        <Route path="/lesson/:lessonId" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
-        <Route path="/quiz/:quizId" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
-        <Route path="/challenges" element={<ProtectedRoute><Challenges /></ProtectedRoute>} />
-        <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
-        <Route path="/achievements" element={<ProtectedRoute><Achievements /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/learning" element={<Learning />} />
+          <Route path="/learning-path" element={<LearningPath />} />
+          <Route path="/lesson/:lessonId" element={<Lesson />} />
+          <Route path="/quiz/:quizId" element={<Quiz />} />
+          <Route path="/challenges" element={<Challenges />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/achievements" element={<Achievements />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
         
         {/* Catch-all */}
         <Route path="*" element={<NotFound />} />
