@@ -29,6 +29,13 @@ const HERO_IMAGE = "/manus-storage/katalyst-hero-campus_fa6d5ff3.jpg";
 const COACH_IMAGE = "/manus-storage/katalyst-coach-orbit_efa784b0.png";
 const SPARK_IMAGE = "/manus-storage/katalyst-achievement-spark_a9c0935e.png";
 
+const QUIZ_QUESTIONS = [
+  { q: "What does AI stand for?", options: ["Artificial Intelligence", "Automated Interface", "Applied Informatics", "Algorithmic Input"], answer: 0 },
+  { q: "Which of these is a popular machine learning framework?", options: ["React", "TensorFlow", "Django", "Bootstrap"], answer: 1 },
+  { q: "What is 'training data' used for in AI?", options: ["Styling the UI", "Teaching a model patterns", "Storing user passwords", "Compiling code"], answer: 1 },
+  { q: "Which term describes AI generating human-like text?", options: ["Natural Language Processing", "Network Latency", "Neural Load Prediction", "Node Layer Parsing"], answer: 0 },
+];
+
 export default function Dashboard() {
   const { user } = useAuth();
   const { onOpenCoach } = useOutletContext();
@@ -46,6 +53,11 @@ export default function Dashboard() {
   // Selected Quest modal & celebration states
   const [selectedQuest, setSelectedQuest] = useState(null);
   const [celebrationReward, setCelebrationReward] = useState(null);
+
+  // Quiz gate shown before a quest can be marked complete
+  const [quizQuest, setQuizQuest] = useState(null);
+  const [quizAnswers, setQuizAnswers] = useState(Array(QUIZ_QUESTIONS.length).fill(null));
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -129,6 +141,26 @@ export default function Dashboard() {
     } catch (err) {
       console.warn("Could not save completion to backend, local state remains", err);
     }
+  };
+
+  const QUIZ_PASS_RATIO = 0.8;
+  const quizCorrectCount = quizAnswers.filter((a, i) => a === QUIZ_QUESTIONS[i].answer).length;
+  const quizPassed = quizCorrectCount / QUIZ_QUESTIONS.length >= QUIZ_PASS_RATIO;
+
+  const handleQuizCheck = () => setQuizSubmitted(true);
+
+  const handleQuizRetry = () => {
+    setQuizAnswers(Array(QUIZ_QUESTIONS.length).fill(null));
+    setQuizSubmitted(false);
+  };
+
+  const handleQuizClaim = () => {
+    if (!quizPassed) return;
+    setToast({ title: "Quiz Complete", body: `You got ${quizCorrectCount}/${QUIZ_QUESTIONS.length} right.` });
+    handleCompleteQuest(quizQuest);
+    setQuizQuest(null);
+    setQuizAnswers(Array(QUIZ_QUESTIONS.length).fill(null));
+    setQuizSubmitted(false);
   };
 
   const handleClaimChallenge = () => {
@@ -573,7 +605,10 @@ export default function Dashboard() {
                   <span>Ask Coach Helper</span>
                 </button>
                 <button
-                  onClick={() => handleCompleteQuest(selectedQuest)}
+                  onClick={() => {
+                    setQuizQuest(selectedQuest);
+                    setSelectedQuest(null);
+                  }}
                   className="flex-1 py-3 bg-theme-plum text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 hover:scale-[1.01] cursor-pointer hover:bg-theme-berry transition-all shadow-md shadow-theme-plum/10"
                 >
                   <span>Complete quest</span>
@@ -582,6 +617,131 @@ export default function Dashboard() {
               </div>
             </motion.section>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Quick AI Quiz Gate: must answer before quest is marked complete */}
+      <AnimatePresence>
+        {quizQuest && (
+          <motion.div
+            className="fixed inset-0 bg-theme-plum/30 backdrop-blur-sm z-50 flex items-center justify-center p-4 md:p-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.section
+              className="w-full max-w-lg bg-white rounded-3xl border border-theme-plum/10 shadow-2xl z-50 max-h-[88vh] overflow-y-auto"
+              initial={{ opacity: 0, scale: 0.92, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 16 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-gradient-to-br from-theme-plum to-theme-berry px-6 md:px-8 py-6 rounded-t-3xl text-white space-y-3">
+                <div className="w-11 h-11 rounded-xl bg-white/15 flex items-center justify-center">
+                  <Sparkles className="w-5.5 h-5.5" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Quick AI Quiz</span>
+                  <h2 className="font-display font-black text-xl leading-tight">Answer 4 questions to claim "{quizQuest.title}"</h2>
+                </div>
+                <div className="flex gap-1.5 pt-1">
+                  {QUIZ_QUESTIONS.map((_, i) => (
+                    <div key={i} className={`h-1.5 flex-1 rounded-full transition-all ${quizAnswers[i] !== null ? 'bg-white' : 'bg-white/25'}`} />
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-6 md:p-8 space-y-6">
+                {QUIZ_QUESTIONS.map((question, qi) => (
+                  <div key={qi} className="space-y-2.5">
+                    <p className="text-sm font-bold text-theme-plum flex items-start gap-2">
+                      <span className="shrink-0 w-5 h-5 rounded-full bg-theme-plum/10 text-theme-plum text-[10px] font-black flex items-center justify-center mt-0.5">{qi + 1}</span>
+                      <span>{question.q}</span>
+                    </p>
+                    <div className="grid grid-cols-1 gap-2 pl-7">
+                      {question.options.map((opt, oi) => {
+                        const selected = quizAnswers[qi] === oi;
+                        const isCorrectOption = oi === question.answer;
+                        let style = 'bg-slate-50 text-slate-600 border-transparent hover:bg-slate-100';
+                        if (quizSubmitted) {
+                          if (isCorrectOption) style = 'bg-green-50 text-green-700 border-green-300';
+                          else if (selected) style = 'bg-red-50 text-red-700 border-red-300';
+                          else style = 'bg-slate-50 text-slate-400 border-transparent opacity-60';
+                        } else if (selected) {
+                          style = 'bg-theme-plum text-white border-theme-plum shadow-md shadow-theme-plum/20';
+                        }
+                        return (
+                          <button
+                            key={oi}
+                            disabled={quizSubmitted}
+                            onClick={() => setQuizAnswers(prev => prev.map((a, i) => i === qi ? oi : a))}
+                            className={`text-left text-xs px-3 py-2.5 rounded-xl border flex items-center gap-2.5 transition-all ${quizSubmitted ? 'cursor-default' : 'cursor-pointer'} ${style}`}
+                          >
+                            <span className={`shrink-0 w-5 h-5 rounded-full text-[10px] font-black flex items-center justify-center ${
+                              selected && !quizSubmitted ? 'bg-white/20 text-white' : 'bg-white text-theme-plum/50 border border-theme-plum/10'
+                            }`}>
+                              {String.fromCharCode(65 + oi)}
+                            </span>
+                            <span className="font-semibold flex-1">{opt}</span>
+                            {quizSubmitted && isCorrectOption && <Check className="w-4 h-4 text-green-600 shrink-0" />}
+                            {quizSubmitted && selected && !isCorrectOption && <X className="w-4 h-4 text-red-600 shrink-0" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+
+                {quizSubmitted && (
+                  <div className={`rounded-xl border px-4 py-3 text-xs font-bold text-center ${
+                    quizPassed ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
+                  }`}>
+                    You scored {quizCorrectCount}/{QUIZ_QUESTIONS.length} correct
+                    {quizPassed
+                      ? ' — nice, reward unlocked!'
+                      : ` — need at least ${Math.ceil(QUIZ_QUESTIONS.length * QUIZ_PASS_RATIO)}/${QUIZ_QUESTIONS.length} (80%) to claim XP.`}
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={() => {
+                      setQuizQuest(null);
+                      setQuizAnswers(Array(QUIZ_QUESTIONS.length).fill(null));
+                      setQuizSubmitted(false);
+                    }}
+                    className="flex-1 py-3 bg-white hover:bg-slate-50 text-theme-plum border border-theme-plum/10 font-bold rounded-xl text-xs cursor-pointer transition-all"
+                  >
+                    Cancel
+                  </button>
+                  {quizSubmitted && !quizPassed ? (
+                    <button
+                      onClick={handleQuizRetry}
+                      className="flex-1 py-3 bg-theme-plum text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-theme-berry cursor-pointer transition-all shadow-md shadow-theme-plum/10"
+                    >
+                      <span>Retake quiz</span>
+                    </button>
+                  ) : quizSubmitted ? (
+                    <button
+                      onClick={handleQuizClaim}
+                      className="flex-1 py-3 bg-theme-plum text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-theme-berry cursor-pointer transition-all shadow-md shadow-theme-plum/10"
+                    >
+                      <span>Claim quest reward</span>
+                      <ArrowUpRight className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      disabled={quizAnswers.some(a => a === null)}
+                      onClick={handleQuizCheck}
+                      className="flex-1 py-3 bg-theme-plum text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 hover:bg-theme-berry cursor-pointer transition-all shadow-md shadow-theme-plum/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <span>Check answers</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </motion.section>
+          </motion.div>
         )}
       </AnimatePresence>
 
