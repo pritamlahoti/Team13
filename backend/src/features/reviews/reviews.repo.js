@@ -1,4 +1,4 @@
-const { withTransaction } = require('../../config/db');
+const prisma = require('../../config/prisma');
 
 // Writes the reviews row + xp_ledger row + submission status flip as one
 // transaction so XP is never credited without a recorded review (PRD section 12).
@@ -12,24 +12,24 @@ async function recordReviewAndXp({
   individualComponent,
   teamComponent,
 }) {
-  return withTransaction(async (client) => {
-    const review = await client.query(
-      `INSERT INTO reviews (submission_id, reviewer_type, reviewer_id, outcome, feedback_text)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING *`,
-      [submissionId, reviewerType, reviewerId || null, outcome, feedbackText]
-    );
+  return prisma.$transaction(async (tx) => {
+    const review = await tx.review.create({
+      data: { submissionId, reviewerType, reviewerId: reviewerId || null, outcome, feedbackText },
+    });
 
-    const xp = await client.query(
-      `INSERT INTO xp_ledger (submission_id, scored_by, xp_awarded, individual_component, team_component)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING *`,
-      [submissionId, reviewerType, xpAwarded, individualComponent || null, teamComponent || null]
-    );
+    const xp = await tx.xpLedger.create({
+      data: {
+        submissionId,
+        scoredBy: reviewerType,
+        xpAwarded,
+        individualComponent: individualComponent || null,
+        teamComponent: teamComponent || null,
+      },
+    });
 
-    await client.query(`UPDATE submissions SET status = 'scored' WHERE id = $1`, [submissionId]);
+    await tx.submission.update({ where: { id: submissionId }, data: { status: 'scored' } });
 
-    return { review: review.rows[0], xp: xp.rows[0] };
+    return { review, xp };
   });
 }
 

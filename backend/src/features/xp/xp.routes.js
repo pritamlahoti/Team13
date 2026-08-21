@@ -1,21 +1,26 @@
 const { Router } = require('express');
 const xpService = require('./xp.service');
-const { requireAuth, requireRole } = require('../../middleware/auth');
+const { yearQuerySchema } = require('./xp.schema');
+const { requireAuth } = require('../../middleware/auth');
+const requireSelfOrRole = require('../../middleware/requireSelfOrRole');
+const validate = require('../../middleware/validate');
+const { ROLES } = require('../../constants/roles');
 
 const router = Router();
 
-function canView(req) {
-  return req.user.id === req.params.id || req.user.role !== 'student';
-}
+const canViewUser = requireSelfOrRole('id', ROLES.KATALYST_MANAGEMENT, ROLES.HIGHER_MANAGEMENT);
 
-router.get('/users/:id/xp', requireAuth, async (req, res) => {
-  if (!canView(req)) return res.status(403).json({ error: 'Forbidden' });
-  const year = req.query.year ? Number(req.query.year) : undefined;
-  res.json(await xpService.getYearlyXp(req.params.id, year));
-});
+router.get(
+  '/users/:id/xp',
+  requireAuth,
+  canViewUser,
+  validate(yearQuerySchema, 'query'),
+  async (req, res) => {
+    res.json(await xpService.getYearlyXp(req.params.id, req.validatedQuery.year));
+  }
+);
 
-router.get('/users/:id/xp/ledger', requireAuth, async (req, res) => {
-  if (!canView(req)) return res.status(403).json({ error: 'Forbidden' });
+router.get('/users/:id/xp/ledger', requireAuth, canViewUser, async (req, res) => {
   res.json(await xpService.getLedger(req.params.id));
 });
 

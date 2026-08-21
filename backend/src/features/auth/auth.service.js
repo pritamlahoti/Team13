@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const authRepo = require('./auth.repo');
+const httpError = require('../../utils/httpError');
 
 const BCRYPT_COST = 11;
 
@@ -12,11 +13,7 @@ function signToken(user) {
 
 async function signup({ name, email, password, role, cohortYear }) {
   const existing = await authRepo.findByEmail(email);
-  if (existing) {
-    const err = new Error('Email already in use');
-    err.status = 409;
-    throw err;
-  }
+  if (existing) throw httpError(409, 'Email already in use');
   const passwordHash = await bcrypt.hash(password, BCRYPT_COST);
   const user = await authRepo.create({ name, email, passwordHash, role, cohortYear });
   return { user, token: signToken(user) };
@@ -24,12 +21,10 @@ async function signup({ name, email, password, role, cohortYear }) {
 
 async function login(email, password) {
   const user = await authRepo.findByEmail(email);
-  if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-    const err = new Error('Invalid email or password');
-    err.status = 401;
-    throw err;
+  if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+    throw httpError(401, 'Invalid email or password');
   }
-  const { password_hash, ...safeUser } = user;
+  const { passwordHash, ...safeUser } = user;
   return { user: safeUser, token: signToken(user) };
 }
 
