@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -6,12 +6,12 @@ import {
   Rocket, 
   Trophy, 
   Award, 
-  Settings, 
   LogOut, 
   Flame, 
   Sparkles,
   User,
-  MessageSquare
+  MessageSquare,
+  ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { gamificationService } from '../../services/gamificationService';
@@ -19,35 +19,53 @@ import { gamificationService } from '../../services/gamificationService';
 export default function Sidebar({ onOpenCoach }) {
   const { user, logout } = useAuth();
   const [xp, setXp] = useState(0);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user?.id) {
       gamificationService.getXp(user.id)
         .then(val => {
           setXp(val);
-          setLoading(false);
         })
         .catch(() => {
           setXp(1380); // Fallback
-          setLoading(false);
         });
     }
   }, [user]);
 
   // Game Math: 500 XP per level
+  const getRoleLabel = (role) => {
+    if (role === 'HIGHER_MANAGEMENT') return 'Program Director';
+    if (role === 'KATALYST_MANAGEMENT') return 'Mentor Coach';
+    return 'Katalyst Scholar';
+  };
+
+  // Compile menu items dynamically based on user role
+  const menuItems = [
+    { to: '/dashboard', label: 'Mission Control', icon: LayoutDashboard },
+  ];
+
+  if (user?.role === 'STUDENT') {
+    menuItems.push(
+      { to: '/learning-path', label: 'Learning Path', icon: Compass },
+      { to: '/challenges', label: 'Challenges', icon: Rocket },
+      { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+      { to: '/achievements', label: 'Achievements', icon: Award }
+    );
+  } else if (user?.role === 'KATALYST_MANAGEMENT') {
+    menuItems.push(
+      { to: '/leaderboard', label: 'Leaderboard', icon: Trophy }
+    );
+  } else if (user?.role === 'HIGHER_MANAGEMENT') {
+    menuItems.push(
+      { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+      { to: '/admin', label: 'Admin Console', icon: ShieldCheck }
+    );
+  }
+
   const xpPerLevel = 500;
   const level = Math.floor(xp / xpPerLevel) + 1;
   const currentLevelXp = xp % xpPerLevel;
   const progressPercent = Math.min((currentLevelXp / xpPerLevel) * 100, 100);
-
-  const menuItems = [
-    { to: '/dashboard', label: 'Mission Control', icon: LayoutDashboard },
-    { to: '/learning-path', label: 'Learning Path', icon: Compass },
-    { to: '/challenges', label: 'Challenges', icon: Rocket },
-    { to: '/leaderboard', label: 'Leaderboard', icon: Trophy },
-    { to: '/achievements', label: 'Achievements', icon: Award },
-  ];
 
   const getInitials = (name) => {
     if (!name) return 'EX';
@@ -86,7 +104,7 @@ export default function Sidebar({ onOpenCoach }) {
               {user?.name || 'Explorer'}
             </h3>
             <p className="text-[10px] text-slate-500 truncate font-sans tracking-wide">
-              {user?.role === 'KATALYST_MANAGEMENT' ? 'Mentor Coach' : 'Katalyst Scholar'}
+              {getRoleLabel(user?.role)}
             </p>
           </div>
         </div>

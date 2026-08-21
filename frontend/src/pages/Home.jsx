@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 // Reusable Layout Components
 import Navbar from '../components/layout/Navbar';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -10,12 +10,9 @@ import {
   Sparkles, 
   Users, 
   Trophy, 
-  ChevronRight, 
   X, 
   Bot, 
   Compass, 
-  Play, 
-  Award,
   Calendar
 } from 'lucide-react';
 import { learningService } from '../services/learningService';

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Award, Search, Sparkles, Users, ArrowUpRight, Flame } from 'lucide-react';
+import { Trophy, Search, Users, Flame } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Leaderboard() {

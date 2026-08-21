@@ -21,6 +21,7 @@ import Leaderboard from '../pages/Leaderboard';
 import Achievements from '../pages/Achievements';
 import Profile from '../pages/Profile';
 import Settings from '../pages/Settings';
+import Admin from '../pages/Admin';
 import NotFound from '../pages/NotFound';
 
 function ScrollToTop() {
@@ -56,6 +57,7 @@ export default function AppRoutes() {
           <Route path="/achievements" element={<Achievements />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/admin" element={<Admin />} />
         </Route>
         
         {/* Catch-all */}

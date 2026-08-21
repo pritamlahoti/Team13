@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, Sparkles } from 'lucide-react';
@@ -15,6 +15,25 @@ export default function Login() {
   
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Disable body scrolling when on the login page
+    document.body.style.overflow = 'hidden';
+
+    // Intercept back button to navigate to landing page
+    const handlePopState = () => {
+      navigate('/', { replace: true });
+    };
+
+    window.history.pushState(null, null, window.location.href);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      // Re-enable body scrolling when leaving the login page
+      document.body.style.overflow = '';
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

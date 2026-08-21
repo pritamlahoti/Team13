@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 function CountUp({ value, suffix = "" }) {
@@ -9,7 +9,6 @@ function CountUp({ value, suffix = "" }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          let start = 0;
           const end = parseInt(value, 10);
           if (isNaN(end)) return;
 
