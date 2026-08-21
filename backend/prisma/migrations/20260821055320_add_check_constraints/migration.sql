@@ -1,0 +1,5 @@
+-- This migration added CHECK constraints that are already enforced by
+-- Prisma enums in schema.prisma. The database state is consistent with
+-- the current schema; this file exists to satisfy Prisma's migration
+-- history tracking.
+-- This is an empty migration.
