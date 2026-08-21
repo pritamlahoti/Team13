@@ -1,5 +1,13 @@
 const adminService = require('./admin.service');
 
+// ============================================================
+// DASHBOARD
+// ============================================================
+
+/**
+ * Retrieves aggregated statistics for the admin dashboard.
+ * This includes total students, active activities, total XP, etc.
+ */
 const getDashboard = async (req, res, next) => {
   try {
     const dashboardData = await adminService.getDashboardData();
@@ -9,6 +17,13 @@ const getDashboard = async (req, res, next) => {
   }
 };
 
+// ============================================================
+// ACTIVITY MANAGEMENT
+// ============================================================
+
+/**
+ * Lists all activities (sessions, courses, projects, etc.)
+ */
 const listActivities = async (req, res, next) => {
   try {
     const activities = await adminService.listActivities();
@@ -18,6 +33,10 @@ const listActivities = async (req, res, next) => {
   }
 };
 
+/**
+ * Creates a new activity. 
+ * Extracts the request body and the ID of the admin creating it.
+ */
 const createActivity = async (req, res, next) => {
   try {
     const activity = await adminService.createActivity(req.body, req.user.id);
@@ -27,6 +46,9 @@ const createActivity = async (req, res, next) => {
   }
 };
 
+/**
+ * Retrieves a single activity by its ID.
+ */
 const getActivity = async (req, res, next) => {
   try {
     const activity = await adminService.getActivity(req.params.id);
@@ -37,6 +59,9 @@ const getActivity = async (req, res, next) => {
   }
 };
 
+/**
+ * Updates an existing activity.
+ */
 const updateActivity = async (req, res, next) => {
   try {
     const activity = await adminService.updateActivity(req.params.id, req.body);
@@ -47,6 +72,9 @@ const updateActivity = async (req, res, next) => {
   }
 };
 
+/**
+ * Updates only the status of an activity (e.g., from 'draft' to 'published').
+ */
 const updateActivityStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
@@ -59,9 +87,16 @@ const updateActivityStatus = async (req, res, next) => {
   }
 };
 
+// ============================================================
+// STUDENT MANAGEMENT
+// ============================================================
+
+/**
+ * Lists students, optionally filtering by cohort, status, or search query.
+ */
 const listStudents = async (req, res, next) => {
   try {
-    const filters = req.query; // cohort, status, search
+    const filters = req.query; // e.g. ?cohort_id=1&status=active
     const students = await adminService.listStudents(filters);
     res.json(students);
   } catch (err) {
@@ -69,6 +104,9 @@ const listStudents = async (req, res, next) => {
   }
 };
 
+/**
+ * Gets detailed profile information for a specific student.
+ */
 const getStudent = async (req, res, next) => {
   try {
     const student = await adminService.getStudent(req.params.id);
@@ -79,6 +117,9 @@ const getStudent = async (req, res, next) => {
   }
 };
 
+/**
+ * Gets progress metrics (recent XP, submissions) for a specific student.
+ */
 const getStudentProgress = async (req, res, next) => {
   try {
     const progress = await adminService.getStudentProgress(req.params.id);
@@ -88,6 +129,13 @@ const getStudentProgress = async (req, res, next) => {
   }
 };
 
+// ============================================================
+// MENTOR MANAGEMENT
+// ============================================================
+
+/**
+ * Lists all mentors in the platform.
+ */
 const listMentors = async (req, res, next) => {
   try {
     const mentors = await adminService.listMentors();
@@ -97,6 +145,9 @@ const listMentors = async (req, res, next) => {
   }
 };
 
+/**
+ * Gets detailed information for a specific mentor.
+ */
 const getMentor = async (req, res, next) => {
   try {
     const mentor = await adminService.getMentor(req.params.id);
@@ -107,6 +158,9 @@ const getMentor = async (req, res, next) => {
   }
 };
 
+/**
+ * Retrieves the list of students currently assigned to a specific mentor.
+ */
 const getMentorStudents = async (req, res, next) => {
   try {
     const students = await adminService.getMentorStudents(req.params.id);
@@ -116,6 +170,9 @@ const getMentorStudents = async (req, res, next) => {
   }
 };
 
+/**
+ * Assigns a student to a mentor.
+ */
 const assignMentor = async (req, res, next) => {
   try {
     const { mentorId, studentId } = req.body;
@@ -126,15 +183,25 @@ const assignMentor = async (req, res, next) => {
   }
 };
 
+/**
+ * Removes (or deactivates) an existing mentor-student assignment.
+ */
 const removeMentorAssignment = async (req, res, next) => {
   try {
     await adminService.removeMentorAssignment(req.params.mentorId, req.params.studentId);
-    res.status(204).send();
+    res.status(204).send(); // 204 No Content for successful deletion
   } catch (err) {
     next(err);
   }
 };
 
+// ============================================================
+// XP RULES & ANALYTICS
+// ============================================================
+
+/**
+ * Retrieves the default XP configuration for different activity types.
+ */
 const getXpRules = async (req, res, next) => {
   try {
     const rules = await adminService.getXpRules();
@@ -144,6 +211,9 @@ const getXpRules = async (req, res, next) => {
   }
 };
 
+/**
+ * Updates the default XP values for activity types.
+ */
 const updateXpRules = async (req, res, next) => {
   try {
     const rules = await adminService.updateXpRules(req.body);
@@ -153,6 +223,9 @@ const updateXpRules = async (req, res, next) => {
   }
 };
 
+/**
+ * Gets a high-level analytics overview (participation, total xp, etc.)
+ */
 const getAnalyticsOverview = async (req, res, next) => {
   try {
     const data = await adminService.getAnalyticsOverview(req.query);
@@ -162,6 +235,9 @@ const getAnalyticsOverview = async (req, res, next) => {
   }
 };
 
+/**
+ * Identifies students who are losing momentum (e.g., inactive for over 7 days).
+ */
 const getAtRiskStudents = async (req, res, next) => {
   try {
     const atRisk = await adminService.getAtRiskStudents();
@@ -171,6 +247,9 @@ const getAtRiskStudents = async (req, res, next) => {
   }
 };
 
+/**
+ * Generates an admin report by delegating to the reports service.
+ */
 const generateAdminReport = async (req, res, next) => {
   try {
     const report = await adminService.generateAdminReport(req.query);

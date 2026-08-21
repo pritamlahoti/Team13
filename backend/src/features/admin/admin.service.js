@@ -1,5 +1,8 @@
 const adminRepo = require('./admin.repo');
 
+/**
+ * Aggregates dashboard data from various sources into a single payload.
+ */
 async function getDashboardData() {
   const stats = await adminRepo.getDashboardStats();
   
@@ -33,16 +36,25 @@ async function getDashboardData() {
   };
 }
 
+/**
+ * Returns a list of all activities
+ */
 function listActivities() {
   return adminRepo.listActivities();
 }
 
+/**
+ * Returns a single activity by ID
+ */
 function getActivity(id) {
   return adminRepo.getActivity(id);
 }
 
+/**
+ * Validates and creates a new activity
+ */
 function createActivity(data, createdBy) {
-  // Validate basic required fields
+  // Validate basic required fields before attempting DB insert
   if (!data.title) throw new Error('Title is required');
   if (!data.type_name) throw new Error('Activity type is required');
   if (data.start_date && data.due_date && new Date(data.due_date) < new Date(data.start_date)) {
@@ -52,6 +64,9 @@ function createActivity(data, createdBy) {
   return adminRepo.createActivity(data, createdBy);
 }
 
+/**
+ * Validates and updates an existing activity
+ */
 function updateActivity(id, data) {
   if (data.start_date && data.due_date && new Date(data.due_date) < new Date(data.start_date)) {
     throw new Error('Due date cannot be before start date');
@@ -63,6 +78,9 @@ function updateActivityStatus(id, status) {
   return adminRepo.updateActivityStatus(id, status);
 }
 
+/**
+ * Returns students matching optional filters
+ */
 function listStudents(filters) {
   return adminRepo.listStudents(filters);
 }
@@ -111,6 +129,9 @@ function getAtRiskStudents() {
   return adminRepo.getAtRiskStudents();
 }
 
+/**
+ * Uses the existing reportsService to generate an admin-specific report
+ */
 const reportsService = require('../reports/reports.service');
 function generateAdminReport(filters) {
   return reportsService.generateReport(filters);
