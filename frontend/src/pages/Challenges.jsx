@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Code, Rocket, Target, Clock3, Users, Play } from 'lucide-react';
+=======
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Code, Flame, Rocket, Target, BookOpen, Clock3, Award, Users, ChevronRight, Play } from 'lucide-react';
+>>>>>>> origin/mohit
 
 export default function Challenges() {
   const [activeCategory, setActiveCategory] = useState('all');

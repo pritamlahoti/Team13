@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useRef } from 'react';
+=======
+import React, { useRef } from 'react';
+>>>>>>> origin/mohit
 import { useFrame } from '@react-three/fiber';
 import { Sparkles } from '@react-three/drei';
 

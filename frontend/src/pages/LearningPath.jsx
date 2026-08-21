@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useState, useEffect } from 'react';
+=======
+import React, { useState, useEffect } from 'react';
+>>>>>>> origin/mohit
 import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -10,9 +14,18 @@ import {
   Sparkles, 
   Users, 
   Trophy, 
+<<<<<<< HEAD
   X, 
   Bot, 
   Compass, 
+=======
+  ChevronRight, 
+  X, 
+  Bot, 
+  Compass, 
+  Play, 
+  Award,
+>>>>>>> origin/mohit
   Calendar
 } from 'lucide-react';
 import { learningService } from '../services/learningService';

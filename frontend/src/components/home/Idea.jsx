@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import React from 'react';
+>>>>>>> origin/mohit
 import { motion } from 'framer-motion';
 import { Award, Zap, Flame, Sparkles } from 'lucide-react';
 

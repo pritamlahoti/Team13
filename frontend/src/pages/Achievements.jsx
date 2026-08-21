@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Award, Lock, Check } from 'lucide-react';
+=======
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Award, Compass, Sparkles, Flame, Play, Clock3, Star, Lock, Heart, Check } from 'lucide-react';
+>>>>>>> origin/mohit
 
 const SPARK_IMAGE = "/manus-storage/katalyst-achievement-spark_a9c0935e.png";
 

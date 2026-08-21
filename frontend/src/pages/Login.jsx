@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useState, useEffect } from 'react';
+=======
+import React, { useState } from 'react';
+>>>>>>> origin/mohit
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, Sparkles } from 'lucide-react';
@@ -16,6 +20,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+<<<<<<< HEAD
   useEffect(() => {
     // Disable body scrolling when on the login page
     document.body.style.overflow = 'hidden';
@@ -35,6 +40,8 @@ export default function Login() {
     };
   }, [navigate]);
 
+=======
+>>>>>>> origin/mohit
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {

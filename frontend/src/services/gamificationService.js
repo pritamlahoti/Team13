@@ -7,6 +7,7 @@ const MOCK_LEADERBOARD = [
   { position: 4, name: "Vihaan Gupta", level: 7, initials: "VG", hue: "coral" },
 ];
 
+<<<<<<< HEAD
 // Initialize mock XP database in localStorage
 const initXPDB = () => {
   if (!localStorage.getItem('mock_xp_ledger_db')) {
@@ -32,16 +33,23 @@ const initXPDB = () => {
 };
 initXPDB();
 
+=======
+>>>>>>> origin/mohit
 export const gamificationService = {
   getXp: async (userId) => {
     try {
       const data = await api.request(`/users/${userId}/xp`);
       return data.totalXp ?? 0;
     } catch (err) {
+<<<<<<< HEAD
       console.warn('Backend connection failed, calculating XP from local ledger', err);
       const ledger = JSON.parse(localStorage.getItem('mock_xp_ledger_db') || '[]');
       const userEntries = ledger.filter(entry => entry.userId === userId);
       return userEntries.reduce((sum, entry) => sum + entry.xp_awarded, 0);
+=======
+      console.warn('Backend connection failed, using mock XP total', err);
+      return 1380; // Shriya's mock total
+>>>>>>> origin/mohit
     }
   },
   
@@ -49,15 +57,24 @@ export const gamificationService = {
     try {
       return await api.request(`/users/${userId}/xp/ledger`);
     } catch (err) {
+<<<<<<< HEAD
       console.warn('Backend connection failed, using local simulated ledger', err);
       const ledger = JSON.parse(localStorage.getItem('mock_xp_ledger_db') || '[]');
       return ledger
         .filter(entry => entry.userId === userId)
         .reverse(); // Newest first
+=======
+      console.warn('Backend connection failed, using mock XP ledger', err);
+      return [
+        { id: '1', scored_by: 'ai_coach', xp_awarded: 250, created_at: new Date().toISOString() },
+        { id: '2', scored_by: 'management', xp_awarded: 150, created_at: new Date().toISOString() }
+      ];
+>>>>>>> origin/mohit
     }
   },
   
   getLeaderboard: async () => {
+<<<<<<< HEAD
     try {
       // Stub leaderboard backend if there was one
     } catch {
@@ -100,6 +117,10 @@ export const gamificationService = {
       hue: s.hue,
       mine: s.id === currentUser.id
     }));
+=======
+    // Standard static leaderboard fallback for the cohort/student view
+    return MOCK_LEADERBOARD;
+>>>>>>> origin/mohit
   },
 
   getAIProgressUpdate: async (userId) => {
@@ -108,10 +129,14 @@ export const gamificationService = {
       return data.update;
     } catch (err) {
       console.warn('Backend connection failed, using mock progress update', err);
+<<<<<<< HEAD
       const xp = await gamificationService.getXp(userId);
       const nextLevelXp = (Math.floor(xp / 500) + 1) * 500;
       const left = nextLevelXp - xp;
       return `You have completed your daily challenge checkpoints. Finish your pending Bootcamp assignments and you will be only ${left} XP away from Leveling Up!`;
+=======
+      return "You have a strong start. Finish the Bootcamp module and you will be 20 XP from a level-up.";
+>>>>>>> origin/mohit
     }
   }
 };

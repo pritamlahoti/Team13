@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Send, Bot, User } from 'lucide-react';
+=======
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Sparkles, Send, Bot, ShieldAlert, ArrowRight, User } from 'lucide-react';
+>>>>>>> origin/mohit
 import { useAuth } from '../../hooks/useAuth';
 import { gamificationService } from '../../services/gamificationService';
 
@@ -9,6 +15,10 @@ export default function AICoachDrawer({ isOpen, onClose }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+<<<<<<< HEAD
+=======
+  const [progressSummary, setProgressSummary] = useState('');
+>>>>>>> origin/mohit
   const messageEndRef = useRef(null);
 
   useEffect(() => {
@@ -16,6 +26,10 @@ export default function AICoachDrawer({ isOpen, onClose }) {
       // Load AI progress update once when opened
       gamificationService.getAIProgressUpdate(user.id)
         .then(summary => {
+<<<<<<< HEAD
+=======
+          setProgressSummary(summary);
+>>>>>>> origin/mohit
           setMessages([
             {
               id: 'init-1',
@@ -59,7 +73,10 @@ export default function AICoachDrawer({ isOpen, onClose }) {
   const handleSend = async (textToSend) => {
     if (!textToSend.trim()) return;
 
+<<<<<<< HEAD
     // eslint-disable-next-line react-hooks/purity
+=======
+>>>>>>> origin/mohit
     const userMsg = { id: Date.now().toString(), from: 'user', text: textToSend };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
