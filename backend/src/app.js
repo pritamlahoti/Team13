@@ -10,6 +10,7 @@ const reviewsRoutes = require('./features/reviews/reviews.routes');
 const aiCoachRoutes = require('./features/aiCoach/aiCoach.routes');
 const xpRoutes = require('./features/xp/xp.routes');
 const reportsRoutes = require('./features/reports/reports.routes');
+const adminRoutes = require('./features/admin/admin.routes');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(reviewsRoutes);
 app.use(aiCoachRoutes);
 app.use(xpRoutes);
 app.use(reportsRoutes);
+app.use(adminRoutes);
 
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
 app.use(errorHandler);
