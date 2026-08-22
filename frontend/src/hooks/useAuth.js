@@ -1,3 +1,7 @@
+import { authService } from '../services/authService';
+
 export function useAuth() {
-  return {};
+  return {
+    user: authService.getCurrentUser(),
+  };
 }
